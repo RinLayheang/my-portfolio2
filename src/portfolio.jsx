@@ -1,0 +1,648 @@
+import { useState, useEffect, useRef, useCallback } from "react";
+import profileImg from "./assets/me.png";
+
+const COLORS = {
+  bg: "#07080a",
+  surface: "#0d0f12",
+  card: "#12151a",
+  border: "#1e2228",
+  accent: "#4df0c0",
+  accent2: "#4db8f0",
+  accent3: "#f0c04d",
+  text: "#dce4f0",
+  muted: "#5a6478",
+  white: "#f0f4ff",
+};
+
+const skills = [
+  {
+    icon: "⬡",
+    title: "Frontend Dev",
+    desc: "Building performant, pixel-perfect interfaces. Clean, maintainable code with thoughtful micro-interactions that elevate user experience.",
+    tags: ["HTML/CSS", "JavaScript", "React", "Tailwind"],
+    color: COLORS.accent,
+  },
+  {
+    icon: "◎",
+    title: "Data Analyst",
+    desc: "Turning messy datasets into clear narratives. Dashboards, statistical analysis, and visualizations that drive real decisions.",
+    tags: ["Python", "Pandas", "SQL", "Matplotlib"],
+    color: COLORS.accent2,
+  },
+  {
+    icon: "◈",
+    title: "UI/UX Design",
+    desc: "Designing interfaces people actually enjoy. From wireframes to high-fidelity prototypes with a strong sense of visual hierarchy.",
+    tags: ["Figma", "Prototyping", "Research", "Design Systems"],
+    color: COLORS.accent3,
+  },
+];
+
+const projects = [
+  {
+    num: "01",
+    name: "Cambodia Air Quality Dashboard",
+    desc: "Real-time PM2.5 monitoring across major Cambodian cities with interactive charts and historical trend analysis.",
+    type: "Data Viz",
+    year: "2025",
+    color: COLORS.accent,
+    img: "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=600&q=80",
+    imgAlt: "Data dashboard with charts",
+  },
+  {
+    num: "02",
+    name: "CADT Student Portal Redesign",
+    desc: "Full UX overhaul of the student information system — improved navigation flow, accessibility, and overall satisfaction.",
+    type: "Design",
+    year: "2024",
+    color: COLORS.accent2,
+    img: "https://images.unsplash.com/photo-1545235617-9465d2a55698?w=600&q=80",
+    imgAlt: "UI design mockup on screen",
+  },
+  {
+    num: "03",
+    name: "Khmer Market Price Predictor",
+    desc: "ML model forecasting price fluctuations for key Cambodian agricultural commodities using time-series data.",
+    type: "ML / Analytics",
+    year: "2025",
+    color: COLORS.accent3,
+    img: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&q=80",
+    imgAlt: "Stock market data and predictions",
+  },
+  {
+    num: "04",
+    name: "Personal Finance Tracker",
+    desc: "React web app with beautiful data visualizations for budgeting, expense categorization, and financial analytics.",
+    type: "Frontend",
+    year: "2024",
+    color: "#b04df0",
+    img: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=600&q=80",
+    imgAlt: "Finance app UI on laptop",
+  },
+];
+
+const contacts = [
+  { icon: "✉", label: "Email", value: "layheang@cadt.edu.kh", href: "mailto:layheang@cadt.edu.kh" },
+  { icon: "⬡", label: "GitHub", value: "github.com/RinLayheang", href: "https://github.com/RinLayheang" },
+  { icon: "◈", label: "LinkedIn", value: "linkedin.com/in/rin-layheang", href: "https://www.linkedin.com/in/rin-layheang-7aab5a334" },
+  { icon: "ⓕ", label: "Facebook", value: "facebook.com/rinn.layheang", href: "https://www.facebook.com/rinn.layheang.2025" },
+];
+
+/* ── Hooks ── */
+// Ref-based mouse position — zero re-renders, RAF-driven DOM updates only
+function useMousePosition() {
+  const posRef = useRef({ x: -100, y: -100 });
+  useEffect(() => {
+    const h = (e) => {
+      posRef.current = { x: e.clientX, y: e.clientY };
+    };
+    window.addEventListener("mousemove", h, { passive: true });
+    return () => window.removeEventListener("mousemove", h);
+  }, []);
+  return posRef; // consumers read posRef.current inside RAF loops
+}
+
+function useScrollY() {
+  const [y, setY] = useState(0);
+  useEffect(() => {
+    const h = () => setY(window.scrollY);
+    window.addEventListener("scroll", h, { passive: true });
+    return () => window.removeEventListener("scroll", h);
+  }, []);
+  return y;
+}
+
+function useInView(threshold = 0.15) {
+  const ref = useRef(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) setInView(true); },
+      { threshold }
+    );
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return [ref, inView];
+}
+
+/* ── Cursor ── */
+function Cursor({ mouseRef }) {
+  const dotEl = useRef(null);
+  const ringEl = useRef(null);
+  const ring = useRef({ x: -100, y: -100 });
+  const rafRef = useRef();
+
+  useEffect(() => {
+    const animate = () => {
+      const { x, y } = mouseRef.current;
+      // dot snaps instantly
+      if (dotEl.current) {
+        dotEl.current.style.left = x + "px";
+        dotEl.current.style.top = y + "px";
+      }
+      // ring lags behind smoothly
+      ring.current.x += (x - ring.current.x) * 0.1;
+      ring.current.y += (y - ring.current.y) * 0.1;
+      if (ringEl.current) {
+        ringEl.current.style.left = ring.current.x + "px";
+        ringEl.current.style.top = ring.current.y + "px";
+      }
+      rafRef.current = requestAnimationFrame(animate);
+    };
+    rafRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [mouseRef]);
+
+  return (
+    <>
+      <div ref={dotEl} className="cursor-el" style={{
+        position: "fixed", width: 8, height: 8,
+        background: COLORS.accent, borderRadius: "50%",
+        pointerEvents: "none", zIndex: 9999,
+        transform: "translate(-50%,-50%)",
+        mixBlendMode: "difference",
+      }} />
+      <div ref={ringEl} className="cursor-el" style={{
+        position: "fixed", width: 32, height: 32,
+        border: `1px solid ${COLORS.accent}`,
+        borderRadius: "50%", pointerEvents: "none", zIndex: 9998,
+        transform: "translate(-50%,-50%)", opacity: 0.45,
+      }} />
+    </>
+  );
+}
+
+/* ── FadeIn wrapper ── */
+function Reveal({ children, delay = 0, style = {} }) {
+  const [ref, inView] = useInView();
+  return (
+    <div ref={ref} style={{
+      opacity: inView ? 1 : 0,
+      transform: inView ? "translateY(0)" : "translateY(36px)",
+      transition: `opacity 0.85s ${delay}s ease, transform 0.85s ${delay}s ease`,
+      ...style,
+    }}>
+      {children}
+    </div>
+  );
+}
+
+/* ── Animated counter ── */
+function Counter({ target, suffix = "" }) {
+  const [val, setVal] = useState(0);
+  const [ref, inView] = useInView();
+  useEffect(() => {
+    if (!inView) return;
+    if (isNaN(target)) { setVal(target); return; }
+    let start = 0;
+    const step = () => {
+      start += Math.ceil((target - start) / 8) || 1;
+      setVal(start);
+      if (start < target) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [inView, target]);
+  return <span ref={ref}>{isNaN(target) ? target : val}{suffix}</span>;
+}
+
+/* ── Marquee ── */
+function Marquee() {
+  const items = ["DATA ANALYST", "UI/UX DESIGN", "PYTHON", "REACT", "SQL", "FIGMA", "MACHINE LEARNING", "FRONTEND DEV", "DATA SCIENCE"];
+  const doubled = [...items, ...items];
+  return (
+    <div style={{ overflow: "hidden", borderTop: `1px solid ${COLORS.border}`, borderBottom: `1px solid ${COLORS.border}`, background: COLORS.bg, padding: "18px 0", position: "relative", zIndex: 10 }}>
+      <style>{`@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}`}</style>
+      <div style={{ display: "flex", whiteSpace: "nowrap", animation: "marquee 35s linear infinite" }}>
+        {doubled.map((item, i) => (
+          <span key={i} style={{ fontFamily: "monospace", fontSize: 13, fontWeight: 700, letterSpacing: "0.15em", color: "#6e778a", padding: "0 40px", display: "flex", alignItems: "center", gap: 40 }}>
+            {item}<span style={{ color: COLORS.accent, fontSize: 14 }}>✦</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── Nav ── */
+function Nav({ scrollY }) {
+  const sections = ["about", "skills", "projects", "contact"];
+  const scrolled = scrollY > 60;
+  return (
+    <nav className="nav-container" style={{
+      position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      padding: "22px 56px",
+      borderBottom: `1px solid ${scrolled ? COLORS.border : "transparent"}`,
+      backdropFilter: scrolled ? "blur(20px)" : "none",
+      background: scrolled ? "rgba(7,8,10,0.85)" : "transparent",
+      transition: "all 0.4s ease",
+    }}>
+      <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, letterSpacing: "0.1em", color: COLORS.accent }}>RL</div>
+      <div className="nav-links" style={{ display: "flex", gap: 36 }}>
+        {sections.map(s => (
+          <a key={s} href={`#${s}`} style={{ fontFamily: "monospace", fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: COLORS.muted, textDecoration: "none", transition: "color 0.2s" }}
+            onMouseEnter={e => e.target.style.color = COLORS.accent}
+            onMouseLeave={e => e.target.style.color = COLORS.muted}>
+            {s}
+          </a>
+        ))}
+      </div>
+    </nav>
+  );
+}
+
+/* ── Hero ── */
+function Hero() {
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
+  const anim = (delay) => ({
+    opacity: loaded ? 1 : 0,
+    transform: loaded ? "translateY(0)" : "translateY(32px)",
+    transition: `opacity 1s ${delay}s ease, transform 1s ${delay}s ease`,
+  });
+
+  return (
+    <section id="home" className="hero-section" style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 8%", position: "relative", overflow: "hidden" }}>
+      {/* Grid BG */}
+      <div style={{
+        position: "absolute", inset: 0,
+        backgroundImage: `linear-gradient(rgba(77,240,192,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(77,240,192,0.03) 1px,transparent 1px)`,
+        backgroundSize: "60px 60px",
+        WebkitMaskImage: "radial-gradient(ellipse 70% 70% at 50% 50%,black 0%,transparent 100%)",
+        maskImage: "radial-gradient(ellipse 70% 70% at 50% 50%,black 0%,transparent 100%)",
+        zIndex: 0,
+      }} />
+
+      <div className="hero-content" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", zIndex: 2, width: "100%" }}>
+        <div style={{ flex: 1 }} className="hero-text">
+          <div style={{ ...anim(0.1), fontFamily: "monospace", fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase", color: COLORS.accent, marginBottom: 28, display: "flex", alignItems: "center", gap: 12 }}>
+            <span style={{ width: 30, height: 1, background: COLORS.accent }} /> Portfolio · Data Science · CADT
+          </div>
+          <h1 style={{ ...anim(0.3), fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(80px, 15vw, 180px)", lineHeight: 0.82, letterSpacing: "-0.01em", margin: 0, textTransform: "uppercase" }}>
+            <span style={{ color: COLORS.white }}>Rin</span><br />
+            <span style={{ color: COLORS.accent }}>Layheang</span>
+          </h1>
+          <p style={{ ...anim(0.5), fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontSize: "clamp(20px, 3.5vw, 42px)", color: COLORS.muted, marginTop: 24, letterSpacing: "0.02em" }}>
+            2nd Year Data Science Student
+          </p>
+        </div>
+
+        <div className="hero-image-container" style={{ ...anim(0.4), position: "relative", flex: "0 0 55%", display: "flex", justifyContent: "center", transform: "translateY(60px)" }}>
+          {/* Subtle Glow behind image */}
+          <div style={{ position: "absolute", inset: "0", background: `radial-gradient(circle, ${COLORS.accent}12 0%, transparent 70%)`, filter: "blur(50px)", zIndex: -1 }} />
+          <img src={profileImg} alt="Rin Layheang" style={{ width: "100%", height: "auto", objectFit: "contain", filter: "drop-shadow(0 20px 40px rgba(70, 159, 144, 0.4))" }} />
+        </div>
+      </div>
+
+      {/* Bottom Row */}
+      <div className="hero-bottom" style={{ position: "absolute", bottom: 60, left: "8%", right: "8%", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+        <p className="hero-desc" style={{ ...anim(0.7), maxWidth: 280, fontFamily: "monospace", fontSize: 12, lineHeight: 1.8, color: COLORS.muted, textAlign: "left" }}>
+          Turning raw data into meaningful stories — through analysis, interfaces, and design. Based in Phnom Penh, Cambodia.
+        </p>
+        <div className="hero-scroll-wrapper">
+          <ScrollIndicator loaded={loaded} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ScrollIndicator({ loaded }) {
+  return (
+    <div style={{
+      opacity: loaded ? 1 : 0,
+      transform: loaded ? "translateY(0)" : "translateY(20px)",
+      transition: "all 1s 1s ease",
+      display: "flex", flexDirection: "column", alignItems: "center", gap: 12,
+      fontFamily: "monospace", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: COLORS.muted
+    }}>
+      <style>{`@keyframes scrollPulse{0%,100%{transform:scaleY(0.7);opacity:0.3}50%{transform:scaleY(1);opacity:1}}`}</style>
+      SCROLL
+      <div style={{ width: 1, height: 48, background: `linear-gradient(to bottom,${COLORS.accent},transparent)`, transformOrigin: "top", animation: "scrollPulse 2s infinite" }} />
+    </div>
+  );
+}
+
+/* ── About ── */
+function About() {
+  const stats = [
+    { num: "2nd", label: "Year at CADT" },
+    { num: 3, label: "Disciplines" },
+    { num: "∞", label: "Curiosity" },
+    { num: "KH", label: "Phnom Penh" },
+  ];
+  return (
+    <section id="about" className="about-section section-padding" style={{ padding: "140px 56px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
+      <Reveal>
+        <SectionLabel>About Me</SectionLabel>
+        <h2 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(34px,3.5vw,52px)", lineHeight: 1.1, color: COLORS.white, marginBottom: 26 }}>
+          Crafting with <em style={{ color: COLORS.accent, fontStyle: "italic" }}>data</em> & design.
+        </h2>
+        <p style={{ fontFamily: "monospace", fontSize: 13, lineHeight: 1.9, color: COLORS.muted, marginBottom: 14 }}>
+          I'm a 2nd year Data Science student at the Cambodia Academy of Digital Technology (CADT), passionate about the intersection of data, design, and technology.
+        </p>
+        <p style={{ fontFamily: "monospace", fontSize: 13, lineHeight: 1.9, color: COLORS.muted, marginBottom: 32 }}>
+          I believe great interfaces tell stories — and great data does too. My work bridges analytical thinking with visual communication.
+        </p>
+        <CtaButton href="#contact">Get in Touch →</CtaButton>
+      </Reveal>
+      <Reveal delay={0.15}>
+        <div className="skills-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+          {stats.map((s, i) => <StatCard key={i} {...s} />)}
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+
+function StatCard({ num, label }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <div onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+      style={{ background: hov ? "#161b22" : COLORS.card, border: `1px solid ${hov ? COLORS.accent : COLORS.border}`, padding: "28px 24px", transition: "all 0.3s" }}>
+      <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 52, color: COLORS.accent, lineHeight: 1 }}>
+        <Counter target={num} />
+      </div>
+      <div style={{ fontFamily: "monospace", fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: COLORS.muted, marginTop: 6 }}>{label}</div>
+    </div>
+  );
+}
+
+/* ── Skills ── */
+function Skills() {
+  return (
+    <section id="skills" className="section-padding" style={{ padding: "0 56px 140px" }}>
+      <Reveal>
+        <SectionLabel>What I Do</SectionLabel>
+        <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(52px,7vw,100px)", lineHeight: 1, color: COLORS.white, marginBottom: 56 }}>
+          Skills &<br />Expertise
+        </h2>
+      </Reveal>
+      <div className="skills-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 2 }}>
+        {skills.map((s, i) => <SkillCard key={i} {...s} delay={i * 0.12} />)}
+      </div>
+    </section>
+  );
+}
+
+function SkillCard({ icon, title, desc, tags, color, delay }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <Reveal delay={delay}>
+      <div onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+        style={{ background: hov ? "#14181f" : COLORS.card, border: `1px solid ${hov ? color : COLORS.border}`, padding: "40px 32px", position: "relative", overflow: "hidden", transition: "all 0.4s", height: "100%" }}>
+        <div style={{ position: "absolute", inset: 0, background: `linear-gradient(135deg,${color}0a 0%,transparent 60%)`, opacity: hov ? 1 : 0, transition: "opacity 0.4s" }} />
+        <div style={{ fontSize: 34, marginBottom: 18, color }}>{icon}</div>
+        <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 28, letterSpacing: "0.04em", color: COLORS.white, marginBottom: 14 }}>{title}</div>
+        <p style={{ fontFamily: "monospace", fontSize: 12, lineHeight: 1.85, color: COLORS.muted, marginBottom: 24 }}>{desc}</p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {tags.map((t, i) => (
+            <span key={i} style={{ fontFamily: "monospace", fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", padding: "5px 12px", border: `1px solid ${hov ? color + "55" : COLORS.border}`, color: hov ? color : COLORS.muted, transition: "all 0.3s" }}>{t}</span>
+          ))}
+        </div>
+      </div>
+    </Reveal>
+  );
+}
+
+/* ── Projects ── */
+function Projects() {
+  return (
+    <section id="projects" className="section-padding" style={{ padding: "0 56px 140px" }}>
+      <Reveal>
+        <SectionLabel>Work</SectionLabel>
+        <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(52px,7vw,100px)", lineHeight: 1, color: COLORS.white, marginBottom: 60 }}>
+          Selected<br />Projects
+        </h2>
+      </Reveal>
+      {/* Featured top row: 2 wide cards */}
+      <div className="projects-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3, marginBottom: 3 }}>
+        {projects.slice(0, 2).map((p, i) => <ProjectCard key={i} {...p} delay={i * 0.1} tall />)}
+      </div>
+      {/* Bottom row: 2 wide + list hybrid */}
+      <div className="projects-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3 }}>
+        {projects.slice(2, 4).map((p, i) => <ProjectCard key={i} {...p} delay={0.2 + i * 0.1} />)}
+      </div>
+    </section>
+  );
+}
+
+function ProjectCard({ num, name, desc, type, year, color, img, imgAlt, delay, tall }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <Reveal delay={delay}>
+      <div
+        onMouseEnter={() => setHov(true)}
+        onMouseLeave={() => setHov(false)}
+        style={{
+          background: COLORS.card,
+          border: `1px solid ${hov ? color : COLORS.border}`,
+          overflow: "hidden",
+          position: "relative",
+          transition: "border-color 0.4s",
+          cursor: "none",
+        }}
+      >
+        {/* Image */}
+        <div style={{ position: "relative", overflow: "hidden", height: tall ? 260 : 200 }}>
+          <img
+            src={img}
+            alt={imgAlt}
+            style={{
+              width: "100%", height: "100%", objectFit: "cover",
+              transform: hov ? "scale(1.06)" : "scale(1)",
+              transition: "transform 0.6s ease",
+              display: "block",
+            }}
+          />
+          {/* Dark overlay */}
+          <div style={{
+            position: "absolute", inset: 0,
+            background: `linear-gradient(to bottom, transparent 30%, ${COLORS.bg}dd 100%)`,
+          }} />
+          {/* Color tint on hover */}
+          <div style={{
+            position: "absolute", inset: 0,
+            background: color + "22",
+            opacity: hov ? 1 : 0,
+            transition: "opacity 0.4s",
+          }} />
+          {/* Type badge top-right */}
+          <div style={{
+            position: "absolute", top: 16, right: 16,
+            fontFamily: "monospace", fontSize: 10, letterSpacing: "0.15em",
+            textTransform: "uppercase", color: color,
+            border: `1px solid ${color}55`,
+            background: COLORS.bg + "cc",
+            padding: "4px 12px",
+            backdropFilter: "blur(8px)",
+          }}>{type}</div>
+          {/* Number top-left */}
+          <div style={{
+            position: "absolute", top: 16, left: 16,
+            fontFamily: "'Bebas Neue', sans-serif", fontSize: 15,
+            letterSpacing: "0.1em", color: COLORS.muted,
+          }}>{num}</div>
+        </div>
+
+        {/* Content */}
+        <div style={{ padding: "24px 28px 28px" }}>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 10 }}>
+            <div style={{ fontFamily: "Georgia, serif", fontSize: 19, color: COLORS.white, lineHeight: 1.25 }}>{name}</div>
+            <span style={{
+              fontSize: 18, color: hov ? color : COLORS.muted,
+              transform: hov ? "translate(3px,-3px)" : "none",
+              transition: "all 0.3s", flexShrink: 0,
+            }}>↗</span>
+          </div>
+          <p style={{ fontFamily: "monospace", fontSize: 12, color: COLORS.muted, lineHeight: 1.7, marginBottom: 18 }}>{desc}</p>
+          {/* Bottom row */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ width: 32, height: 1, background: `linear-gradient(to right,${color},transparent)` }} />
+            <span style={{ fontFamily: "monospace", fontSize: 11, color: COLORS.muted }}>{year}</span>
+          </div>
+        </div>
+
+        {/* Left accent bar */}
+        <div style={{
+          position: "absolute", left: 0, top: 0, bottom: 0, width: 3,
+          background: color,
+          transform: hov ? "scaleY(1)" : "scaleY(0)",
+          transformOrigin: "top",
+          transition: "transform 0.4s ease",
+        }} />
+      </div>
+    </Reveal>
+  );
+}
+
+/* ── Contact ── */
+function Contact() {
+  return (
+    <section id="contact" className="contact-section section-padding" style={{ padding: "0 56px 120px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
+      <Reveal>
+        <SectionLabel>Contact</SectionLabel>
+        <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(64px,9vw,120px)", lineHeight: 0.88, color: COLORS.white }}>
+          Let's<br /><span style={{ color: COLORS.accent }}>Work.</span>
+        </h2>
+        <p style={{ fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: 18, color: COLORS.muted, marginTop: 20 }}>
+          Open to projects, collaborations & opportunities.
+        </p>
+      </Reveal>
+      <Reveal delay={0.15}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          {contacts.map((c, i) => <ContactRow key={i} {...c} />)}
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+
+function ContactRow({ icon, label, value, href }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <a href={href} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+      style={{ background: hov ? "#101418" : COLORS.card, border: `1px solid ${hov ? COLORS.accent : COLORS.border}`, padding: "22px 26px", display: "flex", alignItems: "center", justifyContent: "space-between", textDecoration: "none", transition: "all 0.3s" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+        <span style={{ fontSize: 16, color: COLORS.accent }}>{icon}</span>
+        <div>
+          <div style={{ fontFamily: "monospace", fontSize: 10, letterSpacing: "0.16em", textTransform: "uppercase", color: COLORS.muted }}>{label}</div>
+          <div style={{ fontFamily: "monospace", fontSize: 13, color: COLORS.white, marginTop: 3 }}>{value}</div>
+        </div>
+      </div>
+      <span style={{ color: hov ? COLORS.accent : COLORS.muted, transform: hov ? "translate(3px,-3px)" : "none", transition: "all 0.3s", fontSize: 18 }}>↗</span>
+    </a>
+  );
+}
+
+/* ── Shared ── */
+function SectionLabel({ children }) {
+  return (
+    <div style={{ fontFamily: "monospace", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: COLORS.accent, marginBottom: 20, display: "flex", alignItems: "center", gap: 12 }}>
+      <span style={{ display: "inline-block", width: 28, height: 1, background: COLORS.accent }} />
+      {children}
+    </div>
+  );
+}
+
+function CtaButton({ href, children }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <a href={href} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+      style={{ display: "inline-flex", alignItems: "center", gap: 10, background: hov ? COLORS.accent2 : COLORS.accent, color: COLORS.bg, fontFamily: "monospace", fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase", padding: "15px 26px", textDecoration: "none", fontWeight: 600, transform: hov ? "translateY(-2px)" : "none", transition: "all 0.2s" }}>
+      {children}
+    </a>
+  );
+}
+
+function Divider() {
+  return <div style={{ height: 1, background: COLORS.border, margin: "0 56px" }} />;
+}
+
+function Footer() {
+  return (
+    <footer style={{ borderTop: `1px solid ${COLORS.border}`, padding: "28px 56px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 17, letterSpacing: "0.1em", color: COLORS.muted }}>RIN LAYHEANG</div>
+      <div style={{ fontFamily: "monospace", fontSize: 11, color: COLORS.muted, letterSpacing: "0.1em" }}>© 2025 · Data Science · CADT · Phnom Penh</div>
+    </footer>
+  );
+}
+
+/* ── Root ── */
+export default function Portfolio() {
+  const mouseRef = useMousePosition(); // ref, not state — no re-renders
+  const scrollY = useScrollY();
+
+  return (
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@1,400;1,700&display=swap');
+        *{box-sizing:border-box;margin:0;padding:0;}
+        html{scroll-behavior:smooth;}
+        body{background:${COLORS.bg};color:${COLORS.text};cursor:none;overflow-x:hidden;}
+        body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:1000;opacity:0.3;}
+        a{cursor:none;}
+        ::-webkit-scrollbar{width:4px;}
+        ::-webkit-scrollbar-track{background:${COLORS.bg};}
+        ::-webkit-scrollbar-thumb{background:${COLORS.border};}
+
+        @media (max-width: 1024px) {
+          .nav-links { gap: 20px !important; }
+          .hero-section { padding: 0 5% !important; }
+          .about-section, .contact-section { grid-template-columns: 1fr !important; gap: 40px !important; }
+          .skills-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .projects-grid { grid-template-columns: 1fr !important; }
+        }
+
+        @media (max-width: 768px) {
+          body { cursor: default !important; }
+          .cursor-el { display: none !important; }
+          .nav-container { padding: 16px 24px !important; }
+          .nav-links { display: none !important; }
+          .hero-content { flex-direction: column !important; text-align: center !important; }
+          .hero-text { flex: none !important; margin-bottom: 40px !important; }
+          .hero-image-container { flex: none !important; width: 80% !important; transform: translateY(0) !important; }
+          .hero-bottom { position: static !important; margin-top: 60px !important; padding: 0 !important; flex-direction: column !important; align-items: center !important; gap: 40px !important; }
+          .hero-desc { text-align: center !important; max-width: 100% !important; }
+          .section-padding { padding: 100px 24px !important; }
+          .skills-grid { grid-template-columns: 1fr !important; }
+          .about-section { padding: 100px 24px !important; }
+          .contact-section { padding: 0 24px 100px !important; }
+        }
+      `}</style>
+      <Cursor mouseRef={mouseRef} />
+      <Nav scrollY={scrollY} />
+      <Hero />
+      <Marquee />
+      <About />
+      <Divider />
+      <Skills />
+      <Divider />
+      <Projects />
+      <Divider />
+      <Contact />
+      <Footer />
+    </>
+  );
+}
