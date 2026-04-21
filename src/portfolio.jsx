@@ -329,7 +329,7 @@ function About() {
   const stats = [
     { num: "2nd", label: "Year at CADT" },
     { num: 3, label: "Disciplines" },
-    { num: "∞", label: "Curiosity" },
+    { icon: "all_inclusive", label: "Curiosity" },
     { num: "KH", label: "Phnom Penh" },
   ];
   return (
@@ -356,13 +356,17 @@ function About() {
   );
 }
 
-function StatCard({ num, label }) {
+function StatCard({ num, icon, label }) {
   const [hov, setHov] = useState(false);
   return (
     <div onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
       style={{ background: hov ? "#161b22" : COLORS.card, border: `1px solid ${hov ? COLORS.accent : COLORS.border}`, padding: "28px 24px", transition: "all 0.3s" }}>
-      <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 52, color: COLORS.accent, lineHeight: 1 }}>
-        <Counter target={num} />
+      <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 52, color: COLORS.accent, lineHeight: 1, display: "flex", alignItems: "center", minHeight: 52 }}>
+        {icon ? (
+          <span className="material-symbols-outlined" style={{ fontSize: 48 }}>{icon}</span>
+        ) : (
+          <Counter target={num} />
+        )}
       </div>
       <div style={{ fontFamily: "monospace", fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: COLORS.muted, marginTop: 6 }}>{label}</div>
     </div>
@@ -551,11 +555,11 @@ function ContactRow({ icon, label, value, href, target }) {
           <div style={{ fontFamily: "monospace", fontSize: 13, color: COLORS.white, marginTop: 3 }}>{value}</div>
         </div>
       </div>
-      <span className="material-symbols-outlined" style={{ 
-        color: hov ? COLORS.accent : COLORS.muted, 
-        transform: hov ? "translate(2px,-2px)" : "none", 
-        transition: "all 0.2s", 
-        fontSize: 20 
+      <span className="material-symbols-outlined" style={{
+        color: hov ? COLORS.accent : COLORS.muted,
+        transform: hov ? "translate(2px,-2px)" : "none",
+        transition: "all 0.2s",
+        fontSize: 20
       }}>north_east</span>
     </a>
   );
