@@ -490,11 +490,11 @@ function ProjectCard({ num, name, desc, type, year, color, img, imgAlt, delay, t
         <div style={{ padding: "24px 28px 28px" }}>
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 10 }}>
             <div style={{ fontFamily: "Georgia, serif", fontSize: 19, color: COLORS.white, lineHeight: 1.25 }}>{name}</div>
-            <span style={{
-              fontSize: 18, color: hov ? color : COLORS.muted,
-              transform: hov ? "translate(3px,-3px)" : "none",
-              transition: "all 0.3s", flexShrink: 0,
-            }}>↗</span>
+            <span className="material-symbols-outlined" style={{
+              fontSize: 20, color: hov ? color : COLORS.muted,
+              transform: hov ? "translate(2px,-2px)" : "none",
+              transition: "all 0.2s", flexShrink: 0,
+            }}>north_east</span>
           </div>
           <p style={{ fontFamily: "monospace", fontSize: 12, color: COLORS.muted, lineHeight: 1.7, marginBottom: 18 }}>{desc}</p>
           {/* Bottom row */}
@@ -551,7 +551,12 @@ function ContactRow({ icon, label, value, href, target }) {
           <div style={{ fontFamily: "monospace", fontSize: 13, color: COLORS.white, marginTop: 3 }}>{value}</div>
         </div>
       </div>
-      <span style={{ color: hov ? COLORS.accent : COLORS.muted, transform: hov ? "translate(3px,-3px)" : "none", transition: "all 0.3s", fontSize: 18 }}>↗</span>
+      <span className="material-symbols-outlined" style={{ 
+        color: hov ? COLORS.accent : COLORS.muted, 
+        transform: hov ? "translate(2px,-2px)" : "none", 
+        transition: "all 0.2s", 
+        fontSize: 20 
+      }}>north_east</span>
     </a>
   );
 }
