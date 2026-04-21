@@ -82,10 +82,10 @@ const projects = [
 ];
 
 const contacts = [
-  { icon: "✉", label: "Email", value: "layheang@cadt.edu.kh", href: "mailto:layheang@cadt.edu.kh" },
-  { icon: "⬡", label: "GitHub", value: "github.com/RinLayheang", href: "https://github.com/RinLayheang" },
-  { icon: "◈", label: "LinkedIn", value: "linkedin.com/in/rin-layheang", href: "https://www.linkedin.com/in/rin-layheang-7aab5a334" },
-  { icon: "ⓕ", label: "Facebook", value: "facebook.com/rinn.layheang", href: "https://www.facebook.com/rinn.layheang.2025" },
+  { icon: "mail", label: "Email", value: "layheang@cadt.edu.kh", href: "mailto:layheang@cadt.edu.kh", target: "_blank" },
+  { icon: "code", label: "GitHub", value: "github.com/RinLayheang", href: "https://github.com/RinLayheang", target: "_blank" },
+  { icon: "link", label: "LinkedIn", value: "linkedin.com/in/rin-layheang", href: "https://www.linkedin.com/in/rin-layheang-7aab5a334", target: "_blank" },
+  { icon: "public", label: "Facebook", value: "facebook.com/rinn.layheang", href: "https://www.facebook.com/rinn.layheang.2025", target: "_blank" },
 ];
 
 /* ── Hooks ── */
@@ -539,13 +539,13 @@ function Contact() {
   );
 }
 
-function ContactRow({ icon, label, value, href }) {
+function ContactRow({ icon, label, value, href, target }) {
   const [hov, setHov] = useState(false);
   return (
-    <a href={href} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+    <a href={href} target={target} rel="noopener noreferrer" onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
       style={{ background: hov ? "#101418" : COLORS.card, border: `1px solid ${hov ? COLORS.accent : COLORS.border}`, padding: "22px 26px", display: "flex", alignItems: "center", justifyContent: "space-between", textDecoration: "none", transition: "all 0.3s" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-        <span style={{ fontSize: 16, color: COLORS.accent }}>{icon}</span>
+        <span className="material-symbols-outlined" style={{ fontSize: 22, color: COLORS.accent }}>{icon}</span>
         <div>
           <div style={{ fontFamily: "monospace", fontSize: 10, letterSpacing: "0.16em", textTransform: "uppercase", color: COLORS.muted }}>{label}</div>
           <div style={{ fontFamily: "monospace", fontSize: 13, color: COLORS.white, marginTop: 3 }}>{value}</div>
@@ -597,7 +597,7 @@ export default function Portfolio() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@1,400;1,700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@1,400;1,700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
         *{box-sizing:border-box;margin:0;padding:0;}
         html{scroll-behavior:smooth;}
         body{background:${COLORS.bg};color:${COLORS.text};cursor:none;overflow-x:hidden;}
