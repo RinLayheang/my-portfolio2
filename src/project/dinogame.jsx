@@ -22,13 +22,16 @@ export default function DinoGame() {
 
     // SEO / Open Graph Update
     const originalTitle = document.title;
+    const currentUrl = window.location.href;
     const metaTags = [
       { property: "og:title", content: "Dino Game | Rin Layheang" },
       { property: "og:description", content: "A fast-paced endless runner built on Scratch, featuring classic arcade mechanics." },
-      { property: "og:image", content: window.location.origin + dinoImg },
+      { property: "og:image", content: window.location.origin + "/dino.png" },
+      { property: "og:url", content: currentUrl },
       { name: "twitter:title", content: "Dino Game | Rin Layheang" },
       { name: "twitter:description", content: "A fast-paced endless runner built on Scratch, featuring classic arcade mechanics." },
-      { name: "twitter:image", content: window.location.origin + dinoImg },
+      { name: "twitter:image", content: window.location.origin + "/dino.png" },
+      { name: "twitter:card", content: "summary_large_image" },
     ];
 
     const prevMetaValues = {};
