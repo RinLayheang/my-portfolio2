@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { Link } from "react-router-dom";
 import profileImg from "./assets/me.png";
 import profileImgMobile from "./assets/me2.png";
 import bePoster from "./assets/BE badminton Poster/BE badminton Poster.png";
@@ -6,7 +7,7 @@ import beLogo from "./assets/BE badminton Poster/bebadmintonlogo.jpg";
 import poster10 from "./assets/BE badminton Poster/10.png";
 import poster11 from "./assets/BE badminton Poster/11.png";
 import poster65 from "./assets/BE badminton Poster/65.png";
-import dinoGameImg from "./assets/Your paragraph text (2).png";
+import dinoGameImg from "./assets/dino.png";
 import gasManagementImg from "./assets/gas.png";
 
 
@@ -51,12 +52,13 @@ const projects = [
   {
     num: "01",
     name: "Dino Game",
-    desc: "Real-time PM2.5 monitoring across major Cambodian cities with interactive charts and historical trend analysis.",
+    desc: "A fast-paced endless runner built on Scratch, featuring classic arcade mechanics and progressive difficulty.",
     type: "Scratch",
     year: "2025",
     color: COLORS.accent,
     img: dinoGameImg,
-    imgAlt: "Data dashboard with charts",
+    imgAlt: "Dino Game gameplay",
+    path: "/project/dinogame",
   },
   {
     num: "02",
@@ -507,92 +509,103 @@ function Projects() {
   );
 }
 
-function ProjectCard({ num, name, desc, type, year, color, img, imgAlt, delay, tall }) {
+function ProjectCard({ num, name, desc, type, year, color, img, imgAlt, delay, tall, path }) {
   const [hov, setHov] = useState(false);
+  const CardContent = (
+    <div
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      className="interactive"
+      style={{
+        background: COLORS.card,
+        border: `1px solid ${hov ? color : COLORS.border}`,
+        overflow: "hidden",
+        position: "relative",
+        transition: "border-color 0.4s",
+        cursor: "none",
+        height: "100%",
+      }}
+    >
+      {/* Image */}
+      <div style={{ position: "relative", overflow: "hidden", height: tall ? 260 : 200 }}>
+        <img
+          src={img}
+          alt={imgAlt}
+          style={{
+            width: "100%", height: "100%", objectFit: "cover",
+            transform: hov ? "scale(1.06)" : "scale(1)",
+            transition: "transform 0.6s ease",
+            display: "block",
+          }}
+        />
+        {/* Dark overlay */}
+        <div style={{
+          position: "absolute", inset: 0,
+          background: `linear-gradient(to bottom, transparent 30%, ${COLORS.bg}dd 100%)`,
+        }} />
+        {/* Color tint on hover */}
+        <div style={{
+          position: "absolute", inset: 0,
+          background: color + "22",
+          opacity: hov ? 1 : 0,
+          transition: "opacity 0.4s",
+        }} />
+        {/* Type badge top-right */}
+        <div style={{
+          position: "absolute", top: 16, right: 16,
+          fontFamily: "monospace", fontSize: 10, letterSpacing: "0.15em",
+          textTransform: "uppercase", color: color,
+          border: `1px solid ${color}55`,
+          background: COLORS.bg + "cc",
+          padding: "4px 12px",
+          backdropFilter: "blur(8px)",
+        }}>{type}</div>
+        {/* Number top-left */}
+        <div style={{
+          position: "absolute", top: 16, left: 16,
+          fontFamily: "'Bebas Neue', sans-serif", fontSize: 15,
+          letterSpacing: "0.1em", color: COLORS.muted,
+        }}>{num}</div>
+      </div>
+
+      {/* Content */}
+      <div style={{ padding: "24px 28px 28px" }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 10 }}>
+          <div style={{ fontFamily: "Georgia, serif", fontSize: 19, color: COLORS.white, lineHeight: 1.25 }}>{name}</div>
+          <span className="material-symbols-outlined" style={{
+            fontSize: 20, color: hov ? color : COLORS.muted,
+            transform: hov ? "translate(2px,-2px)" : "none",
+            transition: "all 0.2s", flexShrink: 0,
+          }}>north_east</span>
+        </div>
+        <p style={{ fontFamily: "monospace", fontSize: 12, color: COLORS.muted, lineHeight: 1.7, marginBottom: 18 }}>{desc}</p>
+        {/* Bottom row */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ width: 32, height: 1, background: `linear-gradient(to right,${color},transparent)` }} />
+          <span style={{ fontFamily: "monospace", fontSize: 11, color: COLORS.muted }}>{year}</span>
+        </div>
+      </div>
+
+      {/* Left accent bar */}
+      <div style={{
+        position: "absolute", left: 0, top: 0, bottom: 0, width: 3,
+        background: color,
+        transform: hov ? "scaleY(1)" : "scaleY(0)",
+        transformOrigin: "top",
+        transition: "transform 0.4s ease",
+      }} />
+    </div>
+  );
+
   return (
     <Reveal delay={delay}>
-      <div
-        onMouseEnter={() => setHov(true)}
-        onMouseLeave={() => setHov(false)}
-        className="interactive"
-        style={{
-          background: COLORS.card,
-          border: `1px solid ${hov ? color : COLORS.border}`,
-          overflow: "hidden",
-          position: "relative",
-          transition: "border-color 0.4s",
-          cursor: "none",
-        }}
-      >
-        {/* Image */}
-        <div style={{ position: "relative", overflow: "hidden", height: tall ? 260 : 200 }}>
-          <img
-            src={img}
-            alt={imgAlt}
-            style={{
-              width: "100%", height: "100%", objectFit: "cover",
-              transform: hov ? "scale(1.06)" : "scale(1)",
-              transition: "transform 0.6s ease",
-              display: "block",
-            }}
-          />
-          {/* Dark overlay */}
-          <div style={{
-            position: "absolute", inset: 0,
-            background: `linear-gradient(to bottom, transparent 30%, ${COLORS.bg}dd 100%)`,
-          }} />
-          {/* Color tint on hover */}
-          <div style={{
-            position: "absolute", inset: 0,
-            background: color + "22",
-            opacity: hov ? 1 : 0,
-            transition: "opacity 0.4s",
-          }} />
-          {/* Type badge top-right */}
-          <div style={{
-            position: "absolute", top: 16, right: 16,
-            fontFamily: "monospace", fontSize: 10, letterSpacing: "0.15em",
-            textTransform: "uppercase", color: color,
-            border: `1px solid ${color}55`,
-            background: COLORS.bg + "cc",
-            padding: "4px 12px",
-            backdropFilter: "blur(8px)",
-          }}>{type}</div>
-          {/* Number top-left */}
-          <div style={{
-            position: "absolute", top: 16, left: 16,
-            fontFamily: "'Bebas Neue', sans-serif", fontSize: 15,
-            letterSpacing: "0.1em", color: COLORS.muted,
-          }}>{num}</div>
-        </div>
-
-        {/* Content */}
-        <div style={{ padding: "24px 28px 28px" }}>
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 10 }}>
-            <div style={{ fontFamily: "Georgia, serif", fontSize: 19, color: COLORS.white, lineHeight: 1.25 }}>{name}</div>
-            <span className="material-symbols-outlined" style={{
-              fontSize: 20, color: hov ? color : COLORS.muted,
-              transform: hov ? "translate(2px,-2px)" : "none",
-              transition: "all 0.2s", flexShrink: 0,
-            }}>north_east</span>
-          </div>
-          <p style={{ fontFamily: "monospace", fontSize: 12, color: COLORS.muted, lineHeight: 1.7, marginBottom: 18 }}>{desc}</p>
-          {/* Bottom row */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ width: 32, height: 1, background: `linear-gradient(to right,${color},transparent)` }} />
-            <span style={{ fontFamily: "monospace", fontSize: 11, color: COLORS.muted }}>{year}</span>
-          </div>
-        </div>
-
-        {/* Left accent bar */}
-        <div style={{
-          position: "absolute", left: 0, top: 0, bottom: 0, width: 3,
-          background: color,
-          transform: hov ? "scaleY(1)" : "scaleY(0)",
-          transformOrigin: "top",
-          transition: "transform 0.4s ease",
-        }} />
-      </div>
+      {path ? (
+        <Link to={path} style={{ textDecoration: "none", cursor: "none" }}>
+          {CardContent}
+        </Link>
+      ) : (
+        CardContent
+      )}
     </Reveal>
   );
 }
@@ -680,12 +693,12 @@ function BusinessCard({ name, desc, services, links, logo, poster, gallery, colo
 
         {/* Horizontal Scroll Gallery (Figma/Insta style) */}
         <div style={{ position: "relative", zIndex: 1, margin: "0 -40px" }}>
-          <div 
+          <div
             ref={scrollRef}
-            style={{ 
-              display: "flex", 
-              gap: 20, 
-              overflowX: "auto", 
+            style={{
+              display: "flex",
+              gap: 20,
+              overflowX: "auto",
               padding: "0 40px",
               scrollbarWidth: "none",
               msOverflowStyle: "none"
@@ -694,9 +707,9 @@ function BusinessCard({ name, desc, services, links, logo, poster, gallery, colo
             <style>{`.interactive div::-webkit-scrollbar { display: none; }`}</style>
             {[poster, ...(gallery || [])].filter((img, i, self) => self.indexOf(img) === i).map((img, i) => (
               <div key={i} style={{ flex: "0 0 320px", height: "450px", overflow: "hidden", border: `1px solid ${COLORS.border}` }}>
-                <img 
-                  src={img} 
-                  alt={`${name} work ${i}`} 
+                <img
+                  src={img}
+                  alt={`${name} work ${i}`}
                   style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.5s ease" }}
                   onMouseEnter={e => e.target.style.transform = "scale(1.05)"}
                   onMouseLeave={e => e.target.style.transform = "scale(1)"}
