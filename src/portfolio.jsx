@@ -6,6 +6,8 @@ import beLogo from "./assets/BE badminton Poster/bebadmintonlogo.jpg";
 import poster10 from "./assets/BE badminton Poster/10.png";
 import poster11 from "./assets/BE badminton Poster/11.png";
 import poster65 from "./assets/BE badminton Poster/65.png";
+import dinoGameImg from "./assets/Your paragraph text (2).png";
+import gasManagementImg from "./assets/gas.png";
 
 
 const COLORS = {
@@ -53,7 +55,7 @@ const projects = [
     type: "Scratch",
     year: "2025",
     color: COLORS.accent,
-    img: "/src/assets/Your paragraph text (2).png",
+    img: dinoGameImg,
     imgAlt: "Data dashboard with charts",
   },
   {
@@ -63,7 +65,7 @@ const projects = [
     type: "C Programming",
     year: "2025",
     color: COLORS.accent2,
-    img: "/src/assets/gas.png",
+    img: gasManagementImg,
     imgAlt: "UI design mockup on screen",
   },
   {
