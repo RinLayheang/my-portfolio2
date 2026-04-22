@@ -9,6 +9,12 @@ import poster11 from "./assets/BE badminton Poster/11.png";
 import poster65 from "./assets/BE badminton Poster/65.png";
 import dinoGameImg from "./assets/dino.png";
 import gasManagementImg from "./assets/gas.png";
+import weatherImg from "/weather_analyzer.png";
+import beBadmintonImg from "/be_badminton.png";
+import beUI from "/be_ui.png";
+import robotImg from "/robot.png";
+
+
 
 
 const COLORS = {
@@ -72,22 +78,42 @@ const projects = [
   },
   {
     num: "03",
-    name: "Khmer Market Price Predictor",
-    desc: "ML model forecasting price fluctuations for key Cambodian agricultural commodities using time-series data.",
-    type: "ML / Analytics",
-    year: "2025",
-    color: COLORS.accent3,
-    img: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&q=80",
+    name: "Weather Analyzer",
+    desc: "An OOP-driven Python application that processes Kaggle weather datasets. Features a modular class structure for automated data cleaning, statistical analysis, and trend visualization.",
+    type: "Python / Analytics",
+    year: "2026",
+    color: "#b04df0",
+    img: weatherImg,
     imgAlt: "Stock market data and predictions",
   },
   {
     num: "04",
-    name: "Personal Finance Tracker",
-    desc: "React web app with beautiful data visualizations for budgeting, expense categorization, and financial analytics.",
+    name: "Be Badminton Website",
+    desc: "A React e-commerce platform for badminton gear. Features a modular architecture, persistent shopping cart, and a custom admin dashboard with a high-tech minimalist design",
     type: "Frontend",
-    year: "2024",
-    color: "#b04df0",
-    img: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=600&q=80",
+    year: "2026",
+    color: COLORS.accent3,
+    img: beBadmintonImg,
+    imgAlt: "Finance app UI on laptop",
+  },
+  {
+    num: "05",
+    name: "Be Badminton UX/UI",
+    desc: "A UI/UX Design for badminton gear.",
+    type: "UX/UI Design",
+    year: "2026",
+    color: COLORS.accent2,
+    img: beUI,
+    imgAlt: "Finance app UI on laptop",
+  },
+  {
+    num: "06",
+    name: "4WD Robot Car",
+    desc: "A 4WD Robot Car built with Arduino UNO, motor driver, and ultrasonic sensor. Features line following, obstacle detection, and remote control via Bluetooth and joystick. Programmed in C++ with Arduino IDE.",
+    type: "Arduino / Robotics",
+    year: "2026",
+    color: COLORS.accent2,
+    img: robotImg,
     imgAlt: "Finance app UI on laptop",
   },
 ];
@@ -505,6 +531,9 @@ function Projects() {
       <div className="projects-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3 }}>
         {projects.slice(2, 4).map((p, i) => <ProjectCard key={i} {...p} delay={0.2 + i * 0.1} />)}
       </div>
+      <div className="projects-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3 }}>
+        {projects.slice(4, 6).map((p, i) => <ProjectCard key={i} {...p} delay={0.2 + i * 0.1} />)}
+      </div>
     </section>
   );
 }
@@ -673,7 +702,7 @@ function BusinessCard({ name, desc, services, links, logo, poster, gallery, colo
     if (!el) return;
 
     let rafId;
-    let direction = 1; 
+    let direction = 1;
     let currentScroll = el.scrollLeft;
     const speed = 0.5;
 
@@ -905,20 +934,20 @@ export default function Portfolio() {
   return (
     <>
       {fullscreenData && (
-        <div 
+        <div
           className="interactive"
           style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.95)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
           onClick={() => setFullscreenData(null)}
         >
-          <button 
+          <button
             onClick={(e) => { e.stopPropagation(); setFullscreenData(null); }}
             style={{ position: 'absolute', top: 40, right: 40, background: 'none', border: 'none', color: COLORS.white, cursor: 'none', zIndex: 1001 }}
           >
             <span className="material-symbols-outlined interactive" style={{ fontSize: 36 }}>close</span>
           </button>
-          
+
           {fullscreenData.index > 0 && (
-            <button 
+            <button
               onClick={(e) => { e.stopPropagation(); setFullscreenData(prev => ({ ...prev, index: prev.index - 1 })); }}
               style={{ position: 'absolute', left: 40, background: 'none', border: 'none', color: COLORS.white, cursor: 'none', zIndex: 1001 }}
             >
@@ -927,7 +956,7 @@ export default function Portfolio() {
           )}
 
           {fullscreenData.index < fullscreenData.images.length - 1 && (
-            <button 
+            <button
               onClick={(e) => { e.stopPropagation(); setFullscreenData(prev => ({ ...prev, index: prev.index + 1 })); }}
               style={{ position: 'absolute', right: 40, background: 'none', border: 'none', color: COLORS.white, cursor: 'none', zIndex: 1001 }}
             >
@@ -935,10 +964,10 @@ export default function Portfolio() {
             </button>
           )}
 
-          <img 
-            src={fullscreenData.images[fullscreenData.index]} 
-            style={{ maxWidth: '85%', maxHeight: '85%', objectFit: 'contain' }} 
-            alt="Fullscreen" 
+          <img
+            src={fullscreenData.images[fullscreenData.index]}
+            style={{ maxWidth: '85%', maxHeight: '85%', objectFit: 'contain' }}
+            alt="Fullscreen"
           />
         </div>
       )}
