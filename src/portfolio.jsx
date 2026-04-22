@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import profileImg from "./assets/me.png";
+import profileImgMobile from "./assets/me2.png";
+
 
 const COLORS = {
-  bg: "#07080a",
-  surface: "#0d0f12",
-  card: "#12151a",
-  border: "#1e2228",
+  bg: "#000000",
+  surface: "#080808",
+  card: "#0d0d0d",
+  border: "#1a1a1a",
   accent: "#4df0c0",
   accent2: "#4db8f0",
   accent3: "#f0c04d",
@@ -82,7 +84,7 @@ const projects = [
 ];
 
 const contacts = [
-  { icon: "mail", label: "Email", value: "layheang@cadt.edu.kh", href: "mailto:layheang@cadt.edu.kh", target: "_blank" },
+  { icon: "mail", label: "Email", value: "layheangrin@gmail.com", href: "mailto:layheangrin@gmail.com", target: "_blank" },
   { icon: "code", label: "GitHub", value: "github.com/RinLayheang", href: "https://github.com/RinLayheang", target: "_blank" },
   { icon: "link", label: "LinkedIn", value: "linkedin.com/in/rin-layheang", href: "https://www.linkedin.com/in/rin-layheang-7aab5a334", target: "_blank" },
   { icon: "public", label: "Facebook", value: "facebook.com/rinn.layheang", href: "https://www.facebook.com/rinn.layheang.2025", target: "_blank" },
@@ -126,12 +128,50 @@ function useInView(threshold = 0.15) {
   return [ref, inView];
 }
 
+function useScrollDirection() {
+  const [dir, setDir] = useState("up");
+  const lastScroll = useRef(0);
+  useEffect(() => {
+    const h = () => {
+      const current = window.scrollY;
+      if (current < 10) { setDir("up"); return; }
+      if (current > lastScroll.current && current > 100) setDir("down");
+      else if (current < lastScroll.current) setDir("up");
+      lastScroll.current = current;
+    };
+    window.addEventListener("scroll", h, { passive: true });
+    return () => window.removeEventListener("scroll", h);
+  }, []);
+  return dir;
+}
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const h = () => setIsMobile(window.innerWidth <= 768);
+    h();
+    window.addEventListener("resize", h);
+    return () => window.removeEventListener("resize", h);
+  }, []);
+  return isMobile;
+}
+
 /* ── Cursor ── */
 function Cursor({ mouseRef }) {
   const dotEl = useRef(null);
   const ringEl = useRef(null);
   const ring = useRef({ x: -100, y: -100 });
+  const [hovered, setHovered] = useState(false);
   const rafRef = useRef();
+
+  useEffect(() => {
+    const handleMouseOver = (e) => {
+      const isInteractive = !!e.target.closest('a, button, [role="button"], .interactive, [onmouseenter]');
+      setHovered(isInteractive);
+    };
+    window.addEventListener("mouseover", handleMouseOver);
+    return () => window.removeEventListener("mouseover", handleMouseOver);
+  }, []);
 
   useEffect(() => {
     const animate = () => {
@@ -160,14 +200,18 @@ function Cursor({ mouseRef }) {
         position: "fixed", width: 8, height: 8,
         background: COLORS.accent, borderRadius: "50%",
         pointerEvents: "none", zIndex: 9999,
-        transform: "translate(-50%,-50%)",
+        transform: `translate(-50%,-50%) scale(${hovered ? 0 : 1})`,
+        opacity: hovered ? 0 : 1,
         mixBlendMode: "difference",
+        transition: "transform 0.3s ease, opacity 0.3s ease",
       }} />
       <div ref={ringEl} className="cursor-el" style={{
         position: "fixed", width: 32, height: 32,
         border: `1px solid ${COLORS.accent}`,
         borderRadius: "50%", pointerEvents: "none", zIndex: 9998,
-        transform: "translate(-50%,-50%)", opacity: 0.45,
+        transform: `translate(-50%,-50%) scale(${hovered ? 2.5 : 1})`,
+        opacity: hovered ? 0.2 : 0.45,
+        transition: "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease",
       }} />
     </>
   );
@@ -227,7 +271,11 @@ function Marquee() {
 /* ── Nav ── */
 function Nav({ scrollY }) {
   const sections = ["about", "skills", "projects", "contact"];
+  const dir = useScrollDirection();
+  const isMobile = useIsMobile();
   const scrolled = scrollY > 60;
+  const isHidden = isMobile && dir === "down";
+
   return (
     <nav className="nav-container" style={{
       position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
@@ -235,10 +283,11 @@ function Nav({ scrollY }) {
       padding: "22px 56px",
       borderBottom: `1px solid ${scrolled ? COLORS.border : "transparent"}`,
       backdropFilter: scrolled ? "blur(20px)" : "none",
-      background: scrolled ? "rgba(7,8,10,0.85)" : "transparent",
-      transition: "all 0.4s ease",
+      background: scrolled ? "rgba(0,0,0,0.85)" : "transparent",
+      transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+      transform: isHidden ? "translateY(-100%)" : "translateY(0)",
     }}>
-      <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, letterSpacing: "0.1em", color: COLORS.accent }}>RL</div>
+      <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, letterSpacing: "0.1em", color: COLORS.accent }}>LAYHEANG</div>
       <div className="nav-links" style={{ display: "flex", gap: 36 }}>
         {sections.map(s => (
           <a key={s} href={`#${s}`} style={{ fontFamily: "monospace", fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: COLORS.muted, textDecoration: "none", transition: "color 0.2s" }}
@@ -291,7 +340,10 @@ function Hero() {
         <div className="hero-image-container" style={{ ...anim(0.4), position: "relative", flex: "0 0 55%", display: "flex", justifyContent: "center", transform: "translateY(60px)" }}>
           {/* Subtle Glow behind image */}
           <div style={{ position: "absolute", inset: "0", background: `radial-gradient(circle, ${COLORS.accent}12 0%, transparent 70%)`, filter: "blur(50px)", zIndex: -1 }} />
-          <img src={profileImg} alt="Rin Layheang" style={{ width: "100%", height: "auto", objectFit: "contain", filter: "drop-shadow(0 20px 40px rgba(70, 159, 144, 0.4))" }} />
+          <picture style={{ width: "100%", height: "auto" }}>
+            <source media="(max-width: 768px)" srcSet={profileImgMobile} />
+            <img src={profileImg} alt="Rin Layheang" style={{ width: "100%", height: "auto", objectFit: "contain", filter: "drop-shadow(0 20px 40px rgba(70, 159, 144, 0.4))" }} />
+          </picture>
         </div>
       </div>
 
@@ -359,7 +411,7 @@ function About() {
 function StatCard({ num, icon, label }) {
   const [hov, setHov] = useState(false);
   return (
-    <div onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+    <div onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)} className="interactive"
       style={{ background: hov ? "#161b22" : COLORS.card, border: `1px solid ${hov ? COLORS.accent : COLORS.border}`, padding: "28px 24px", transition: "all 0.3s" }}>
       <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 52, color: COLORS.accent, lineHeight: 1, display: "flex", alignItems: "center", minHeight: 52 }}>
         {icon ? (
@@ -394,7 +446,7 @@ function SkillCard({ icon, title, desc, tags, color, delay }) {
   const [hov, setHov] = useState(false);
   return (
     <Reveal delay={delay}>
-      <div onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+      <div onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)} className="interactive"
         style={{ background: hov ? "#14181f" : COLORS.card, border: `1px solid ${hov ? color : COLORS.border}`, padding: "40px 32px", position: "relative", overflow: "hidden", transition: "all 0.4s", height: "100%" }}>
         <div style={{ position: "absolute", inset: 0, background: `linear-gradient(135deg,${color}0a 0%,transparent 60%)`, opacity: hov ? 1 : 0, transition: "opacity 0.4s" }} />
         <div style={{ fontSize: 34, marginBottom: 18, color }}>{icon}</div>
@@ -439,6 +491,7 @@ function ProjectCard({ num, name, desc, type, year, color, img, imgAlt, delay, t
       <div
         onMouseEnter={() => setHov(true)}
         onMouseLeave={() => setHov(false)}
+        className="interactive"
         style={{
           background: COLORS.card,
           border: `1px solid ${hov ? color : COLORS.border}`,
@@ -546,7 +599,7 @@ function Contact() {
 function ContactRow({ icon, label, value, href, target }) {
   const [hov, setHov] = useState(false);
   return (
-    <a href={href} target={target} rel="noopener noreferrer" onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+    <a href={href} target={target} rel="noopener noreferrer" onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)} className="interactive"
       style={{ background: hov ? "#101418" : COLORS.card, border: `1px solid ${hov ? COLORS.accent : COLORS.border}`, padding: "22px 26px", display: "flex", alignItems: "center", justifyContent: "space-between", textDecoration: "none", transition: "all 0.3s" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
         <span className="material-symbols-outlined" style={{ fontSize: 22, color: COLORS.accent }}>{icon}</span>
