@@ -1,6 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import profileImg from "./assets/me.png";
 import profileImgMobile from "./assets/me2.png";
+import bePoster from "./assets/BE badminton Poster/BE badminton Poster.png";
+import beLogo from "./assets/BE badminton Poster/bebadmintonlogo.jpg";
+import poster10 from "./assets/BE badminton Poster/10.png";
+import poster11 from "./assets/BE badminton Poster/11.png";
+import poster65 from "./assets/BE badminton Poster/65.png";
 
 
 const COLORS = {
@@ -80,6 +85,22 @@ const projects = [
     color: "#b04df0",
     img: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=600&q=80",
     imgAlt: "Finance app UI on laptop",
+  },
+];
+
+const businesses = [
+  {
+    name: "Be Badminton",
+    desc: "Your premier destination for high-quality badminton gear and accessories. We empower players to reach their peak performance with elite equipment and expert service. Bringing the best badminton products directly to the community.",
+    services: ["Badminton Rackets", "Shuttlecocks", "Custom Stringing", "Sports Apparel"],
+    links: [
+      { type: "tiktok", url: "https://www.tiktok.com/@be_withu3" },
+      { type: "facebook", url: "https://www.facebook.com/profile.php?id=61581383279455" }
+    ],
+    logo: beLogo,
+    poster: bePoster,
+    gallery: [bePoster, poster65, poster10, poster11],
+    color: COLORS.accent,
   },
 ];
 
@@ -270,7 +291,7 @@ function Marquee() {
 
 /* ── Nav ── */
 function Nav({ scrollY }) {
-  const sections = ["about", "skills", "projects", "contact"];
+  const sections = ["about", "skills", "projects", "business", "contact"];
   const dir = useScrollDirection();
   const isMobile = useIsMobile();
   const scrolled = scrollY > 60;
@@ -574,6 +595,119 @@ function ProjectCard({ num, name, desc, type, year, color, img, imgAlt, delay, t
   );
 }
 
+/* ── Business ── */
+function Business() {
+  return (
+    <section id="business" className="section-padding" style={{ padding: "0 56px 140px" }}>
+      <Reveal>
+        <SectionLabel>My own business</SectionLabel>
+        <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(52px,7vw,100px)", lineHeight: 1, color: COLORS.white, marginBottom: 56 }}>
+          Ventures &<br />Entrepreneurship
+        </h2>
+      </Reveal>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 3 }}>
+        {businesses.map((b, i) => <BusinessCard key={i} {...b} delay={i * 0.1} />)}
+      </div>
+    </section>
+  );
+}
+
+function BusinessCard({ name, desc, services, links, logo, poster, gallery, color, delay }) {
+  const [hov, setHov] = useState(false);
+  const scrollRef = useRef(null);
+
+  return (
+    <Reveal delay={delay}>
+      <div
+        onMouseEnter={() => setHov(true)}
+        onMouseLeave={() => setHov(false)}
+        className="interactive"
+        style={{
+          background: COLORS.card,
+          border: `1px solid ${hov ? color : COLORS.border}`,
+          padding: "48px 40px",
+          position: "relative",
+          transition: "all 0.3s",
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          gap: 32
+        }}
+      >
+        <div style={{ position: "absolute", inset: 0, background: `linear-gradient(135deg, ${color}0a 0%, transparent 50%)`, opacity: hov ? 1 : 0, transition: "opacity 0.4s" }} />
+
+        {/* Top Header Row with Logo on Left */}
+        <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "flex-start", gap: 24 }}>
+          {logo && (
+            <div style={{ flexShrink: 0 }}>
+              <img src={logo} alt="Logo" style={{ width: 80, height: 80, borderRadius: "50%", border: `2px solid ${color}`, padding: 4, background: COLORS.surface }} />
+            </div>
+          )}
+          <div style={{ flex: 1 }}>
+            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 48, color: COLORS.white, marginBottom: 16, letterSpacing: "0.02em" }}>{name}</div>
+            <div style={{ display: "flex", gap: 20, marginBottom: 14 }}>
+              {links.map((link, i) => (
+                <a key={i} href={link.url} target="_blank" rel="noopener noreferrer"
+                  style={{ color: hov ? color : COLORS.muted, transition: "color 0.3s", display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
+                  {link.type === 'tiktok' ? (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.9-.32-1.92-.35-2.81.07-.67.32-1.28.87-1.58 1.56-.57 1.08-.29 2.48.62 3.32.74.77 1.84 1.06 2.87.92 1.09-.13 2.13-.88 2.53-1.94.1-.22.18-.44.23-.67.05-2.45.02-4.9.03-7.35z" /></svg>
+                  ) : (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
+                  )}
+                  <span style={{ fontFamily: "monospace", fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase" }}>{link.type}</span>
+                </a>
+              ))}
+            </div>
+            <p style={{ fontFamily: "monospace", fontSize: 13, color: COLORS.muted, lineHeight: 1.8, maxWidth: "85%" }}>{desc}</p>
+          </div>
+        </div>
+
+        {/* Services & Links */}
+        <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 14 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+            {services.map((s, i) => (
+              <span key={i} style={{
+                fontFamily: "monospace", fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase",
+                padding: "6px 14px", border: `1px solid ${hov ? color + "44" : COLORS.border}`, color: hov ? color : COLORS.muted,
+                transition: "all 0.3s"
+              }}>{s}</span>
+            ))}
+          </div>
+
+        </div>
+
+        {/* Horizontal Scroll Gallery (Figma/Insta style) */}
+        <div style={{ position: "relative", zIndex: 1, margin: "0 -40px" }}>
+          <div 
+            ref={scrollRef}
+            style={{ 
+              display: "flex", 
+              gap: 20, 
+              overflowX: "auto", 
+              padding: "0 40px",
+              scrollbarWidth: "none",
+              msOverflowStyle: "none"
+            }}
+          >
+            <style>{`.interactive div::-webkit-scrollbar { display: none; }`}</style>
+            {[poster, ...(gallery || [])].filter((img, i, self) => self.indexOf(img) === i).map((img, i) => (
+              <div key={i} style={{ flex: "0 0 320px", height: "450px", overflow: "hidden", border: `1px solid ${COLORS.border}` }}>
+                <img 
+                  src={img} 
+                  alt={`${name} work ${i}`} 
+                  style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.5s ease" }}
+                  onMouseEnter={e => e.target.style.transform = "scale(1.05)"}
+                  onMouseLeave={e => e.target.style.transform = "scale(1)"}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </Reveal>
+  );
+}
+
 /* ── Contact ── */
 function Contact() {
   return (
@@ -675,6 +809,7 @@ export default function Portfolio() {
           .about-section, .contact-section { grid-template-columns: 1fr !important; gap: 40px !important; }
           .skills-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .projects-grid { grid-template-columns: 1fr !important; }
+          .interactive[style*="display: grid"] { grid-template-columns: 1fr !important; }
         }
 
         @media (max-width: 768px) {
@@ -702,6 +837,8 @@ export default function Portfolio() {
       <Skills />
       <Divider />
       <Projects />
+      <Divider />
+      <Business />
       <Divider />
       <Contact />
       <Footer />
