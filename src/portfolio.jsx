@@ -499,7 +499,7 @@ function Projects() {
       </Reveal>
       {/* Featured top row: 2 wide cards */}
       <div className="projects-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3, marginBottom: 3 }}>
-        {projects.slice(0, 2).map((p, i) => <ProjectCard key={i} {...p} delay={i * 0.1} tall />)}
+        {projects.slice(0, 2).map((p, i) => <ProjectCard key={i} {...p} delay={i * 0.1} />)}
       </div>
       {/* Bottom row: 2 wide + list hybrid */}
       <div className="projects-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3 }}>
@@ -509,7 +509,7 @@ function Projects() {
   );
 }
 
-function ProjectCard({ num, name, desc, type, year, color, img, imgAlt, delay, tall, path }) {
+function ProjectCard({ num, name, desc, type, year, color, img, imgAlt, delay, path }) {
   const [hov, setHov] = useState(false);
   const CardContent = (
     <div
@@ -527,7 +527,7 @@ function ProjectCard({ num, name, desc, type, year, color, img, imgAlt, delay, t
       }}
     >
       {/* Image */}
-      <div style={{ position: "relative", overflow: "hidden", height: tall ? 260 : 200 }}>
+      <div style={{ position: "relative", overflow: "hidden", aspectRatio: "1.9 / 1" }}>
         <img
           src={img}
           alt={imgAlt}
@@ -611,7 +611,7 @@ function ProjectCard({ num, name, desc, type, year, color, img, imgAlt, delay, t
 }
 
 /* ── Business ── */
-function Business() {
+function Business({ setFullscreenImg }) {
   return (
     <section id="business" className="section-padding" style={{ padding: "0 56px 140px" }}>
       <Reveal>
@@ -621,22 +621,90 @@ function Business() {
         </h2>
       </Reveal>
       <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 3 }}>
-        {businesses.map((b, i) => <BusinessCard key={i} {...b} delay={i * 0.1} />)}
+        {businesses.map((b, i) => <BusinessCard key={i} {...b} delay={i * 0.1} setFullscreenImg={setFullscreenImg} />)}
       </div>
     </section>
   );
 }
 
-function BusinessCard({ name, desc, services, links, logo, poster, gallery, color, delay }) {
+function BusinessCard({ name, desc, services, links, logo, poster, gallery, color, delay, setFullscreenImg }) {
   const [hov, setHov] = useState(false);
   const scrollRef = useRef(null);
+
+  // Manual Drag to Scroll
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [startScrollLeft, setStartScrollLeft] = useState(0);
+  const dragDistance = useRef(0);
+
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    dragDistance.current = 0;
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setStartScrollLeft(scrollRef.current.scrollLeft);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 2; // scroll speed
+    dragDistance.current = Math.abs(walk);
+    scrollRef.current.scrollLeft = startScrollLeft - walk;
+  };
+
+  const handleImageClick = (images, index) => {
+    // Only open if they didn't drag
+    if (dragDistance.current < 10) {
+      setFullscreenImg({ images, index });
+    }
+  };
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    let rafId;
+    let direction = 1; 
+    let currentScroll = el.scrollLeft;
+    const speed = 0.5;
+
+    const animate = () => {
+      const maxScroll = el.scrollWidth - el.clientWidth;
+      if (!isDragging && maxScroll > 0) {
+        currentScroll += speed * direction;
+        if (currentScroll >= maxScroll) {
+          currentScroll = maxScroll;
+          direction = -1;
+        } else if (currentScroll <= 0) {
+          currentScroll = 0;
+          direction = 1;
+        }
+        el.scrollLeft = currentScroll;
+      } else {
+        currentScroll = el.scrollLeft;
+      }
+      rafId = requestAnimationFrame(animate);
+    };
+
+    rafId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafId);
+  }, [hov, isDragging]);
 
   return (
     <Reveal delay={delay}>
       <div
         onMouseEnter={() => setHov(true)}
         onMouseLeave={() => setHov(false)}
-        className="interactive"
+        className="interactive business-card"
         style={{
           background: COLORS.card,
           border: `1px solid ${hov ? color : COLORS.border}`,
@@ -652,15 +720,15 @@ function BusinessCard({ name, desc, services, links, logo, poster, gallery, colo
         <div style={{ position: "absolute", inset: 0, background: `linear-gradient(135deg, ${color}0a 0%, transparent 50%)`, opacity: hov ? 1 : 0, transition: "opacity 0.4s" }} />
 
         {/* Top Header Row with Logo on Left */}
-        <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "flex-start", gap: 24 }}>
+        <div className="business-header" style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "flex-start", gap: 24 }}>
           {logo && (
             <div style={{ flexShrink: 0 }}>
               <img src={logo} alt="Logo" style={{ width: 80, height: 80, borderRadius: "50%", border: `2px solid ${color}`, padding: 4, background: COLORS.surface }} />
             </div>
           )}
           <div style={{ flex: 1 }}>
-            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 48, color: COLORS.white, marginBottom: 16, letterSpacing: "0.02em" }}>{name}</div>
-            <div style={{ display: "flex", gap: 20, marginBottom: 14 }}>
+            <div className="business-name" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 48, color: COLORS.white, marginBottom: 16, letterSpacing: "0.02em" }}>{name}</div>
+            <div className="business-links" style={{ display: "flex", gap: 20, marginBottom: 14 }}>
               {links.map((link, i) => (
                 <a key={i} href={link.url} target="_blank" rel="noopener noreferrer"
                   style={{ color: hov ? color : COLORS.muted, transition: "color 0.3s", display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
@@ -673,12 +741,12 @@ function BusinessCard({ name, desc, services, links, logo, poster, gallery, colo
                 </a>
               ))}
             </div>
-            <p style={{ fontFamily: "monospace", fontSize: 13, color: COLORS.muted, lineHeight: 1.8, maxWidth: "85%" }}>{desc}</p>
+            <p className="business-desc" style={{ fontFamily: "monospace", fontSize: 13, color: COLORS.muted, lineHeight: 1.8, maxWidth: "85%" }}>{desc}</p>
           </div>
         </div>
 
         {/* Services & Links */}
-        <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 14 }}>
+        <div className="business-services" style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 14 }}>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
             {services.map((s, i) => (
               <span key={i} style={{
@@ -692,30 +760,42 @@ function BusinessCard({ name, desc, services, links, logo, poster, gallery, colo
         </div>
 
         {/* Horizontal Scroll Gallery (Figma/Insta style) */}
-        <div style={{ position: "relative", zIndex: 1, margin: "0 -40px" }}>
+        <div className="business-gallery-wrapper" style={{ position: "relative", zIndex: 1, margin: "0 -40px" }}>
           <div
+            className="business-gallery"
             ref={scrollRef}
+            onMouseDown={handleMouseDown}
+            onMouseLeave={handleMouseLeave}
+            onMouseUp={handleMouseUp}
+            onMouseMove={handleMouseMove}
+            onTouchStart={() => setIsDragging(true)}
+            onTouchEnd={() => setIsDragging(false)}
+            onTouchCancel={() => setIsDragging(false)}
             style={{
               display: "flex",
               gap: 20,
               overflowX: "auto",
               padding: "0 40px",
               scrollbarWidth: "none",
-              msOverflowStyle: "none"
+              msOverflowStyle: "none",
+              cursor: isDragging ? "grabbing" : "grab"
             }}
           >
             <style>{`.interactive div::-webkit-scrollbar { display: none; }`}</style>
-            {[poster, ...(gallery || [])].filter((img, i, self) => self.indexOf(img) === i).map((img, i) => (
-              <div key={i} style={{ flex: "0 0 320px", height: "450px", overflow: "hidden", border: `1px solid ${COLORS.border}` }}>
-                <img
-                  src={img}
-                  alt={`${name} work ${i}`}
-                  style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.5s ease" }}
-                  onMouseEnter={e => e.target.style.transform = "scale(1.05)"}
-                  onMouseLeave={e => e.target.style.transform = "scale(1)"}
-                />
-              </div>
-            ))}
+            {(() => {
+              const uniqueImages = [poster, ...(gallery || [])].filter((img, i, self) => self.indexOf(img) === i);
+              return uniqueImages.map((img, i) => (
+                <div key={i} className="interactive business-gallery-item" style={{ flex: "0 0 320px", height: "450px", overflow: "hidden", border: `1px solid ${COLORS.border}` }} onClick={() => handleImageClick(uniqueImages, i)}>
+                  <img
+                    src={img}
+                    alt={`${name} work ${i}`}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.5s ease" }}
+                    onMouseEnter={e => e.target.style.transform = "scale(1.05)"}
+                    onMouseLeave={e => e.target.style.transform = "scale(1)"}
+                  />
+                </div>
+              ));
+            })()}
           </div>
         </div>
       </div>
@@ -757,7 +837,7 @@ function ContactRow({ icon, label, value, href, target }) {
           <div style={{ fontFamily: "monospace", fontSize: 13, color: COLORS.white, marginTop: 3 }}>{value}</div>
         </div>
       </div>
-      <span className="materiaSl-symbols-outlined" style={{
+      <span className="material-symbols-outlined" style={{
         color: hov ? COLORS.accent : COLORS.muted,
         transform: hov ? "translate(2px,-2px)" : "none",
         transition: "all 0.2s",
@@ -804,9 +884,64 @@ function Footer() {
 export default function Portfolio() {
   const mouseRef = useMousePosition(); // ref, not state — no re-renders
   const scrollY = useScrollY();
+  const [fullscreenData, setFullscreenData] = useState(null);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!fullscreenData) return;
+      if (e.key === 'Escape') setFullscreenData(null);
+      if (e.key === 'ArrowRight' && fullscreenData.index < fullscreenData.images.length - 1) {
+        setFullscreenData(prev => ({ ...prev, index: prev.index + 1 }));
+      }
+      if (e.key === 'ArrowLeft' && fullscreenData.index > 0) {
+        setFullscreenData(prev => ({ ...prev, index: prev.index - 1 }));
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [fullscreenData]);
 
   return (
     <>
+      {fullscreenData && (
+        <div 
+          className="interactive"
+          style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.95)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+          onClick={() => setFullscreenData(null)}
+        >
+          <button 
+            onClick={(e) => { e.stopPropagation(); setFullscreenData(null); }}
+            style={{ position: 'absolute', top: 40, right: 40, background: 'none', border: 'none', color: COLORS.white, cursor: 'none', zIndex: 1001 }}
+          >
+            <span className="material-symbols-outlined interactive" style={{ fontSize: 36 }}>close</span>
+          </button>
+          
+          {fullscreenData.index > 0 && (
+            <button 
+              onClick={(e) => { e.stopPropagation(); setFullscreenData(prev => ({ ...prev, index: prev.index - 1 })); }}
+              style={{ position: 'absolute', left: 40, background: 'none', border: 'none', color: COLORS.white, cursor: 'none', zIndex: 1001 }}
+            >
+              <span className="material-symbols-outlined interactive" style={{ fontSize: 48 }}>chevron_left</span>
+            </button>
+          )}
+
+          {fullscreenData.index < fullscreenData.images.length - 1 && (
+            <button 
+              onClick={(e) => { e.stopPropagation(); setFullscreenData(prev => ({ ...prev, index: prev.index + 1 })); }}
+              style={{ position: 'absolute', right: 40, background: 'none', border: 'none', color: COLORS.white, cursor: 'none', zIndex: 1001 }}
+            >
+              <span className="material-symbols-outlined interactive" style={{ fontSize: 48 }}>chevron_right</span>
+            </button>
+          )}
+
+          <img 
+            src={fullscreenData.images[fullscreenData.index]} 
+            style={{ maxWidth: '85%', maxHeight: '85%', objectFit: 'contain' }} 
+            alt="Fullscreen" 
+          />
+        </div>
+      )}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@1,400;1,700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
         *{box-sizing:border-box;margin:0;padding:0;}
@@ -841,6 +976,17 @@ export default function Portfolio() {
           .skills-grid { grid-template-columns: 1fr !important; }
           .about-section { padding: 100px 24px !important; }
           .contact-section { padding: 0 24px 100px !important; }
+          
+          .business-card { padding: 32px 20px !important; gap: 24px !important; }
+          .business-header { flex-direction: column !important; align-items: center !important; text-align: center !important; gap: 16px !important; }
+          .business-name { font-size: 36px !important; }
+          .business-links { justify-content: center !important; flex-wrap: wrap !important; }
+          .business-desc { max-width: 100% !important; text-align: center !important; }
+          .business-services { align-items: center !important; }
+          .business-services > div { justify-content: center !important; }
+          .business-gallery-wrapper { margin: 0 -20px !important; }
+          .business-gallery { padding: 0 20px !important; gap: 16px !important; }
+          .business-gallery-item { flex: 0 0 240px !important; height: 320px !important; }
         }
       `}</style>
       <Cursor mouseRef={mouseRef} />
@@ -853,7 +999,7 @@ export default function Portfolio() {
       <Divider />
       <Projects />
       <Divider />
-      <Business />
+      <Business setFullscreenImg={setFullscreenData} />
       <Divider />
       <Contact />
       <Footer />
