@@ -12,6 +12,8 @@ import gasManagementImg from "./assets/gas.png";
 import weatherImg from "/weather_analyzer.png";
 import beBadmintonImg from "/be_badminton.png";
 import beUI from "/be_ui.png";
+import robotImg from "/robot.png";
+
 
 
 
@@ -102,6 +104,16 @@ const projects = [
     year: "2026",
     color: COLORS.accent2,
     img: beUI,
+    imgAlt: "Finance app UI on laptop",
+  },
+  {
+    num: "06",
+    name: "4WD Robot Car",
+    desc: "A 4WD Robot Car built with Arduino UNO, motor driver, and ultrasonic sensor. Features line following, obstacle detection, and remote control via Bluetooth and joystick. Programmed in C++ with Arduino IDE.",
+    type: "Arduino / Robotics",
+    year: "2026",
+    color: COLORS.accent2,
+    img: robotImg,
     imgAlt: "Finance app UI on laptop",
   },
 ];
@@ -519,8 +531,8 @@ function Projects() {
       <div className="projects-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3 }}>
         {projects.slice(2, 4).map((p, i) => <ProjectCard key={i} {...p} delay={0.2 + i * 0.1} />)}
       </div>
-      <div className="projects-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 3 }}>
-        {projects.slice(4, 5).map((p, i) => <ProjectCard key={i} {...p} delay={0.2 + i * 0.1} />)}
+      <div className="projects-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3 }}>
+        {projects.slice(4, 6).map((p, i) => <ProjectCard key={i} {...p} delay={0.2 + i * 0.1} />)}
       </div>
     </section>
   );
