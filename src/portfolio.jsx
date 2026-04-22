@@ -744,7 +744,7 @@ function ContactRow({ icon, label, value, href, target }) {
           <div style={{ fontFamily: "monospace", fontSize: 13, color: COLORS.white, marginTop: 3 }}>{value}</div>
         </div>
       </div>
-      <span className="material-symbols-outlined" style={{
+      <span className="materiaSl-symbols-outlined" style={{
         color: hov ? COLORS.accent : COLORS.muted,
         transform: hov ? "translate(2px,-2px)" : "none",
         transition: "all 0.2s",
