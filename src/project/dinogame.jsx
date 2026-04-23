@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import dinoImg from "../assets/dino.png";
 
 const COLORS = {
   bg: "#000000",
@@ -257,7 +256,7 @@ export default function DinoGame() {
               </div>
             )}
             <iframe
-              src="https://turbowarp.org/1131368328/embed?dark=true&autoplay=true"
+              src="https://turbowarp.org/1310615112/embed?dark=true&autoplay=true"
               allowtransparency="true"
               frameBorder="0"
               scrolling="no"
@@ -280,7 +279,7 @@ export default function DinoGame() {
             <div className="info-card">
               <h3>About Project</h3>
               <p>
-                This Dino Game is a classic endless runner project built using Scratch
+                This is a retro-style 2D running dinosaur game built from scratch, paying homage to classic endless runner games. The goal is to keep the dinosaur alive by jumping over obstacles. It was built to understand basic game loop mechanics, collision detection, and sprite animation.
               </p>
             </div>
 
@@ -289,7 +288,7 @@ export default function DinoGame() {
               <p>
                 The objective is simple: survive as long as possible while running through the desert.
                 <br /><br />
-                • Press <strong>SPACE</strong> to jump. <br />
+                • Press <strong>SPACE</strong> or You can <strong>Click</strong> on the Screen to jump. <br />
                 • Avoid cacti and flying birds to maintain your streak.
               </p>
             </div>
