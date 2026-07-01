@@ -260,7 +260,8 @@ export default function DinoGame() {
               allowtransparency="true"
               frameBorder="0"
               scrolling="no"
-              allowFullScreen
+              allowFullScreen={true}
+              allow="fullscreen"
               className="iframe-wrapper"
               onLoad={() => setLoading(false)}
               title="Dino Game"

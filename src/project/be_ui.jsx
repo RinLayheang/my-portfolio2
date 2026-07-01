@@ -245,7 +245,8 @@ export default function BeBadmintonUI() {
                         )}
                         <iframe
                             src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fdesign%2FBkRDK2oXY0kqL5FOwY1UdI%2Fbadminton%3Fnode-id%3D0-1%26t%3Dp2Nt9H8rPuVkj5Nc-1"
-                            allowFullScreen
+                            allowFullScreen={true}
+                            allow="fullscreen"
                             className="iframe-wrapper"
                             onLoad={() => setLoading(false)}
                             title="Be Badminton Figma Prototype"
