@@ -85,6 +85,7 @@ const projects = [
     color: "#b04df0",
     img: weatherImg,
     imgAlt: "Stock market data and predictions",
+    path: "/project/weather_analyzer",
   },
   {
     num: "04",
@@ -95,6 +96,7 @@ const projects = [
     color: COLORS.accent3,
     img: beBadmintonImg,
     imgAlt: "Finance app UI on laptop",
+    path: "/project/be_badminton",
   },
   {
     num: "05",
@@ -105,6 +107,7 @@ const projects = [
     color: COLORS.accent2,
     img: beUI,
     imgAlt: "Finance app UI on laptop",
+    path: "/project/be_badminton_ui",
   },
   {
     num: "06",
@@ -114,7 +117,8 @@ const projects = [
     year: "2026",
     color: COLORS.accent2,
     img: robotImg,
-    imgAlt: "Finance app UI on laptop",
+    imgAlt: "4WD Robot Car",
+    path: "/project/4wd_robot_car",
   },
 ];
 
