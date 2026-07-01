@@ -256,7 +256,7 @@ export default function DinoGame() {
               </div>
             )}
             <iframe
-              src="https://turbowarp.org/1310615112/embed?dark=true&autoplay=true"
+              src="https://scratch.mit.edu/projects/1131368328/embed"
               allowtransparency="true"
               frameBorder="0"
               scrolling="no"
