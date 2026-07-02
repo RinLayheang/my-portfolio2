@@ -1,18 +1,18 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
-import profileImg from "./assets/me.png";
-import profileImgMobile from "./assets/me2.png";
-import bePoster from "./assets/BE badminton Poster/BE badminton Poster.png";
-import beLogo from "./assets/BE badminton Poster/bebadmintonlogo.jpg";
-import poster10 from "./assets/BE badminton Poster/10.png";
-import poster11 from "./assets/BE badminton Poster/11.png";
-import poster65 from "./assets/BE badminton Poster/65.png";
-import dinoGameImg from "./assets/dino.png";
-import gasManagementImg from "./assets/gas.png";
-import weatherImg from "/weather_analyzer.png";
-import beBadmintonImg from "/be_badminton.png";
-import beUI from "/be_ui.png";
-import robotImg from "/robot.png";
+import profileImg from "/project/me.png";
+import profileImgMobile from "/project/me2.png";
+import bePoster from "/BE badminton Poster/BE badminton Poster.png";
+import beLogo from "/BE badminton Poster/bebadmintonlogo.jpg";
+import poster10 from "/BE badminton Poster/10.png";
+import poster11 from "/BE badminton Poster/11.png";
+import poster65 from "/BE badminton Poster/65.png";
+import dinoGameImg from "/project/dino.png";
+import gasManagementImg from "/project/gas.png";
+import weatherImg from "/project/weather_analyzer.png";
+import beBadmintonImg from "/project/be_badminton.png";
+import beUI from "/project/be_ui.png";
+import robotImg from "/project/robot.png";
 
 
 
@@ -33,23 +33,23 @@ const COLORS = {
 const skills = [
   {
     icon: "⬡",
-    title: "Frontend Dev",
-    desc: "Building performant, pixel-perfect interfaces. Clean, maintainable code with thoughtful micro-interactions that elevate user experience.",
-    tags: ["HTML/CSS", "JavaScript", "React", "Tailwind"],
+    title: "Full Stack ",
+    desc: "I have experience in full-stack development, including front-end and back-end development.",
+    tags: ["Node.js", "JavaScript", "React", "SQL", "Tailwind", "HTML/CSS",  "C Programming", "C++", "Python"],
     color: COLORS.accent,
   },
   {
     icon: "◎",
     title: "Data Analyst",
     desc: "Turning messy datasets into clear narratives. Dashboards, statistical analysis, and visualizations that drive real decisions.",
-    tags: ["Python", "Pandas", "SQL", "Matplotlib"],
+    tags: ["Python", "Pandas", "SQL", "Matplotlib", "Statistics", "Data Analysis", "PowerBI", "Tableau", "Automation"],
     color: COLORS.accent2,
   },
   {
     icon: "◈",
     title: "UI/UX Design",
     desc: "Designing interfaces people actually enjoy. From wireframes to high-fidelity prototypes with a strong sense of visual hierarchy.",
-    tags: ["Figma", "Prototyping", "Research", "Design Systems"],
+    tags: ["Figma", "Prototyping", "Research", "Design Systems", "UML"],
     color: COLORS.accent3,
   },
 ];
@@ -125,7 +125,7 @@ const projects = [
 const businesses = [
   {
     name: "Be Badminton",
-    desc: "Your premier destination for high-quality badminton gear and accessories. We empower players to reach their peak performance with elite equipment and expert service. Bringing the best badminton products directly to the community.",
+    desc: "BE badminton is a startup business that sells badminton equipment and accessories.",
     services: ["Badminton Rackets", "Shuttlecocks", "Custom Stringing", "Sports Apparel"],
     links: [
       { type: "tiktok", url: "https://www.tiktok.com/@be_withu3" },
@@ -908,7 +908,7 @@ function Footer() {
   return (
     <footer style={{ borderTop: `1px solid ${COLORS.border}`, padding: "28px 56px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
       <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 17, letterSpacing: "0.1em", color: COLORS.muted }}>RIN LAYHEANG</div>
-      <div style={{ fontFamily: "monospace", fontSize: 11, color: COLORS.muted, letterSpacing: "0.1em" }}>© 2025 · Data Science · CADT · Phnom Penh</div>
+      <div style={{ fontFamily: "monospace", fontSize: 11, color: COLORS.muted, letterSpacing: "0.1em" }}>REACT Website · Data Science  · Phnom Penh</div>
     </footer>
   );
 }
