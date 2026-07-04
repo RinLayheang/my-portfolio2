@@ -256,12 +256,11 @@ export default function DinoGame() {
               </div>
             )}
             <iframe
-              src="https://scratch.mit.edu/projects/1131368328/embed"
+              src="https://turbowarp.org/1310615112/embed?dark=true&autoplay=true"
               allowtransparency="true"
               frameBorder="0"
               scrolling="no"
-              allowFullScreen={true}
-              allow="fullscreen"
+              allowFullScreen
               className="iframe-wrapper"
               onLoad={() => setLoading(false)}
               title="Dino Game"
