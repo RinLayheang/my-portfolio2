@@ -297,7 +297,7 @@ function Hero() {
           <p className="hud-label">At a glance</p>
           <dl className="hud-stats">
             <div><dt>Projects</dt><dd>{projects.length}</dd></div>
-            <div><dt>Skill areas</dt><dd>{disciplines.length}</dd></div>
+            <div><dt>Skills</dt><dd>{disciplines.length}</dd></div>
             <div><dt>Business</dt><dd>1</dd></div>
           </dl>
         </div>
