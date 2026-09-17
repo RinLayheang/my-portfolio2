@@ -1,0 +1,505 @@
+/* ── Nav: centred floating glass pill ── */
+.nav {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100% - 32px);
+  padding: 6px 6px 6px 20px;
+  border-radius: 999px;
+  color: var(--ink);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.18));
+  -webkit-backdrop-filter: blur(18px) saturate(170%);
+  backdrop-filter: blur(18px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 rgba(255, 255, 255, 0.35), 0 12px 32px -14px rgba(40, 60, 110, 0.35);
+  transform: translateX(-50%);
+  transition: transform 0.45s var(--ease), background-color 0.3s, box-shadow 0.3s;
+}
+
+.nav.is-scrolled {
+  box-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 rgba(255, 255, 255, 0.35), 0 16px 40px -14px rgba(40, 60, 110, 0.45);
+}
+
+.nav.is-hidden {
+  transform: translate(-50%, calc(-100% - 24px));
+}
+
+.nav-brand {
+  font: 800 19px/1 var(--display);
+  font-variation-settings: "wdth" 75, "opsz" 48;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+  margin-right: 12px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 14px;
+}
+
+.nav-links a {
+  display: block;
+  padding: 8px 14px;
+  border-radius: 999px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+}
+
+.nav-links a:hover {
+  background: rgba(11, 16, 38, 0.07);
+}
+
+.nav-links .nav-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 6px;
+  background: var(--ink);
+  color: #fff;
+  font-weight: 500;
+}
+
+.nav-links .nav-cta:hover {
+  background: #222a4d;
+}
+
+.nav-links .nav-cta .icon {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── Hero ── */
+.hero {
+  --paper: #eef3f4;
+  --ink-soft: #4b5575;
+  --teal: #0a7a8c;
+  position: relative;
+  overflow: hidden;
+  height: 100svh;
+  min-height: 680px;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.hero-contours {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.hero-contours path {
+  fill: none;
+  stroke: var(--ink);
+  stroke-opacity: 0.07;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.hero-intro {
+  position: absolute;
+  z-index: 3;
+  left: var(--gutter);
+  top: 50%;
+  transform: translateY(-42%);
+}
+
+.hero-name {
+  font-family: var(--display);
+  font-weight: 800;
+  font-variation-settings: "wdth" 75, "opsz" 96;
+  font-size: clamp(64px, 8.4vw, 136px);
+  line-height: 0.84;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.hero-name span {
+  display: block;
+  animation: rise 0.9s var(--ease) both;
+}
+
+.hero-name span+span {
+  animation-delay: 0.08s;
+}
+
+.hero-meta {
+  margin-top: 32px;
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  animation: rise 0.9s 0.2s var(--ease) both;
+}
+
+.hero-meta li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero-meta .icon {
+  width: 15px;
+  height: 15px;
+  color: var(--teal);
+}
+
+.hero-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* portrait sits on the bottom edge, like a cut-out standing in the frame */
+.hero-portrait {
+  position: absolute;
+  left: 50%;
+  bottom: -40px; /* Changed from 0 to move the picture down. Adjust this value (-20px, -60px, etc.) as needed */
+  transform: translateX(-50%);
+  height: calc(100% - 64px);
+  aspect-ratio: 946 / 883;
+  animation: fade 1s ease both;
+}
+
+.hero-portrait img,
+.hero-portrait canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-portrait canvas {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+/* before WebGL is ready the chrome version is a plain image, matching the effect's first frame */
+.hero-portrait.is-intro .layer-photo {
+  opacity: 0;
+}
+
+.hero-portrait .layer-photo {
+  transform: translateY(0.8%);
+}
+
+/* without WebGL the switch crossfades the two plain images */
+.hero-portrait.is-static img {
+  transition: opacity 0.6s ease;
+}
+
+.hero-portrait.is-static[data-layer="photo"] .layer-alt,
+.hero-portrait.is-static[data-layer="alt"] .layer-photo {
+  opacity: 0;
+}
+
+.hero-portrait.is-webgl img {
+  visibility: hidden;
+}
+
+.hero-portrait.is-webgl canvas {
+  opacity: 1;
+}
+
+.hero-panels {
+  position: absolute;
+  z-index: 3;
+  right: var(--gutter);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 236px;
+  display: grid;
+  gap: 14px;
+}
+
+.hud {
+  --c: var(--ink);
+  display: block;
+  position: relative;
+  padding: 14px 16px;
+  text-decoration: none;
+  color: inherit;
+  background:
+    linear-gradient(var(--c), var(--c)) left top / 10px 1px, linear-gradient(var(--c), var(--c)) left top / 1px 10px,
+    linear-gradient(var(--c), var(--c)) right top / 10px 1px, linear-gradient(var(--c), var(--c)) right top / 1px 10px,
+    linear-gradient(var(--c), var(--c)) left bottom / 10px 1px, linear-gradient(var(--c), var(--c)) left bottom / 1px 10px,
+    linear-gradient(var(--c), var(--c)) right bottom / 10px 1px, linear-gradient(var(--c), var(--c)) right bottom / 1px 10px,
+    rgba(238, 243, 244, 0.72);
+  background-repeat: no-repeat;
+  animation: slide-in 0.9s var(--ease) both;
+}
+
+.hud:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.hud:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.hud-link:hover {
+  --c: var(--teal);
+}
+
+.hud-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--teal);
+  font-weight: 500;
+}
+
+.hud-title {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.hud-sub {
+  font-size: 12px;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1.4;
+}
+
+.hud-spark {
+  display: block;
+  width: 100%;
+  height: 30px;
+  margin-top: 10px;
+  overflow: visible;
+}
+
+.hud-spark polyline {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+}
+
+.hud-link:hover .hud-spark {
+  color: var(--teal);
+}
+
+.hud-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.hud-stats dt {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+}
+
+.hud-stats dd {
+  font: 800 34px/1 var(--display);
+  font-variation-settings: "wdth" 75, "opsz" 48;
+  margin-top: 4px;
+}
+
+.hero-bar {
+  position: absolute;
+  z-index: 3;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: 28px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  animation: fade 1s 0.4s ease both;
+}
+
+.hero-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  justify-self: start;
+  text-align: left;
+  padding: 4px 14px 4px 4px;
+  border-radius: 999px;
+  transition: background-color 0.2s;
+}
+
+.hero-switch:hover {
+  background: rgba(11, 16, 38, 0.06);
+}
+
+.switch-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink);
+  transition: transform 0.5s var(--ease), background-color 0.2s, color 0.2s;
+}
+
+.switch-icon .icon {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.8;
+}
+
+.hero-switch:hover .switch-icon {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.hero-switch[aria-pressed="true"] .switch-icon {
+  transform: rotate(180deg);
+}
+
+.hero-switch-title {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hero-switch-sub {
+  display: block;
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 22px;
+  border: 1px solid var(--teal);
+  color: var(--teal);
+  background: rgba(238, 243, 244, 0.85);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.hero-cta:hover {
+  background: var(--teal);
+  color: var(--paper);
+}
+
+.hero-social {
+  display: flex;
+  gap: 24px;
+  justify-self: end;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.hero-social a {
+  text-decoration: none;
+  opacity: 0.75;
+}
+
+.hero-social a:hover {
+  opacity: 1;
+  color: var(--teal);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    translate: 24px 0;
+  }
+}
+
+/* Tablet and phone: stack the hero instead of overlaying it */
+@media (max-width: 1024px) {
+  .hero {
+    height: auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 104px 0 28px;
+  }
+
+  .hero-intro,
+  .hero-panels,
+  .hero-bar {
+    position: relative;
+    inset: auto;
+    transform: none;
+  }
+
+  .hero-intro {
+    padding: 0 var(--gutter);
+  }
+
+  .hero-stage {
+    position: relative;
+    margin-top: 12px;
+  }
+
+  .hero-portrait {
+    position: relative;
+    left: auto;
+    transform: none;
+    height: auto;
+    width: min(100%, 720px);
+    margin: 0 auto;
+  }
+
+  .hero-panels {
+    width: auto;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    padding: 24px var(--gutter) 0;
+  }
+
+  .hero-bar {
+    grid-template-columns: 1fr;
+    justify-items: start;
+    padding: 28px var(--gutter) 0;
+    gap: 20px;
+  }
+
+  .hero-social {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-links li:not(:last-child) {
+    display: none;
+  }
+}

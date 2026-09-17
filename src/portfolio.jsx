@@ -1,1041 +1,568 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
-import profileImg from "/project/me.png";
-import profileImgMobile from "/project/me2.png";
-import bePoster from "/BE badminton Poster/BE badminton Poster.png";
-import beLogo from "/BE badminton Poster/bebadmintonlogo.jpg";
-import poster10 from "/BE badminton Poster/10.png";
-import poster11 from "/BE badminton Poster/11.png";
-import poster65 from "/BE badminton Poster/65.png";
-import dinoGameImg from "/project/dino.png";
-import gasManagementImg from "/project/gas.png";
-import weatherImg from "/project/weather_analyzer.png";
-import beBadmintonImg from "/project/be_badminton.png";
-import beUI from "/project/be_ui.png";
-import robotImg from "/project/robot.png";
+import "./portfolio.css";
+import "./hero.css";
 
-
-
-
-const COLORS = {
-  bg: "#000000",
-  surface: "#080808",
-  card: "#0d0d0d",
-  border: "#1a1a1a",
-  accent: "#4df0c0",
-  accent2: "#4db8f0",
-  accent3: "#f0c04d",
-  text: "#dce4f0",
-  muted: "#5a6478",
-  white: "#f0f4ff",
-};
-
-const skills = [
+/* ── Content ── */
+// The three disciplines colour-code skills and projects across the page.
+const disciplines = [
   {
-    icon: "⬡",
-    title: "Full Stack ",
-    desc: "I have experience in full-stack development, including front-end and back-end development.",
-    tags: ["Node.js", "JavaScript", "React", "SQL", "Tailwind", "HTML/CSS",  "C Programming", "C++", "Python"],
-    color: COLORS.accent,
+    key: "data",
+    title: "Data analysis",
+    desc: "Turning messy datasets into clear narratives: dashboards, statistical analysis and visualisations that support real decisions.",
+    tags: ["Python", "Pandas", "SQL", "Matplotlib", "Statistics", "Power BI", "Tableau", "Automation"],
   },
   {
-    icon: "◎",
-    title: "Data Analyst",
-    desc: "Turning messy datasets into clear narratives. Dashboards, statistical analysis, and visualizations that drive real decisions.",
-    tags: ["Python", "Pandas", "SQL", "Matplotlib", "Statistics", "Data Analysis", "PowerBI", "Tableau", "Automation"],
-    color: COLORS.accent2,
+    key: "build",
+    title: "Full-stack development",
+    desc: "Building web apps end to end, from the interface people click on to the server and database behind it.",
+    tags: ["React", "JavaScript", "Node.js", "SQL", "Tailwind", "HTML/CSS", "C", "C++", "Python"],
   },
   {
-    icon: "◈",
-    title: "UI/UX Design",
-    desc: "Designing interfaces people actually enjoy. From wireframes to high-fidelity prototypes with a strong sense of visual hierarchy.",
-    tags: ["Figma", "Prototyping", "Research", "Design Systems", "UML"],
-    color: COLORS.accent3,
+    key: "design",
+    title: "UI/UX design",
+    desc: "Designing interfaces people enjoy using, from wireframes to high-fidelity prototypes with a clear visual hierarchy.",
+    tags: ["Figma", "Prototyping", "User research", "Design systems", "UML"],
   },
 ];
+
+const img = (name, sizes) => ({
+  src: `/img/${name}-${sizes[sizes.length - 1]}.webp`,
+  srcSet: sizes.map((w) => `/img/${name}-${w}.webp ${w}w`).join(", "),
+});
 
 const projects = [
   {
-    num: "01",
     name: "Dino Game",
-    desc: "A fast-paced endless runner built on Scratch, featuring classic arcade mechanics and progressive difficulty.",
-    type: "Scratch",
-    year: "2025",
-    color: COLORS.accent,
-    img: dinoGameImg,
-    imgAlt: "Dino Game gameplay",
+    desc: "An endless runner built in Scratch with classic arcade mechanics and difficulty that ramps up as you play.",
+    type: "Scratch", year: "2025", kind: "build",
+    img: img("dino", [640, 1200]), imgAlt: "Dino Game title screen",
     path: "/project/dinogame",
   },
   {
-    num: "02",
     name: "Gas Management System",
-    desc: "This Gas Management System is a terminal-based administrative tool built in C for a first-year project. It streamlines gas station operations through a functional, role-based interface.",
-    type: "C Programming",
-    year: "2025",
-    color: COLORS.accent2,
-    img: gasManagementImg,
-    imgAlt: "UI design mockup on screen",
+    desc: "A terminal-based admin tool written in C for a first-year project, with role-based menus for running a gas station.",
+    type: "C", year: "2025", kind: "build",
+    img: img("gas", [640, 1200]), imgAlt: "Gas Management System terminal interface",
   },
   {
-    num: "03",
     name: "Weather Analyzer",
-    desc: "An OOP-driven Python application that processes Kaggle weather datasets. Features a modular class structure for automated data cleaning, statistical analysis, and trend visualization.",
-    type: "Python / Analytics",
-    year: "2026",
-    color: "#b04df0",
-    img: weatherImg,
-    imgAlt: "Stock market data and predictions",
+    desc: "An object-oriented Python app that cleans Kaggle weather data, runs statistical analysis and plots trends.",
+    type: "Python", year: "2026", kind: "data",
+    img: img("weather_analyzer", [640, 1200]), imgAlt: "Weather Analyzer charts",
     path: "/project/weather_analyzer",
   },
   {
-    num: "04",
-    name: "Be Badminton Website",
-    desc: "A React e-commerce platform for badminton gear. Features a modular architecture, persistent shopping cart, and a custom admin dashboard with a high-tech minimalist design",
-    type: "Frontend",
-    year: "2026",
-    color: COLORS.accent3,
-    img: beBadmintonImg,
-    imgAlt: "Finance app UI on laptop",
-    path: "/project/be_badminton",
+    name: "Be Badminton website",
+    desc: "A React shop for badminton gear with a persistent cart and a custom admin dashboard.",
+    type: "React", year: "2026", kind: "build",
+    img: img("be_badminton", [640, 1200]), imgAlt: "Be Badminton website on a laptop",
   },
   {
-    num: "05",
-    name: "Be Badminton UX/UI",
-    desc: "A UI/UX Design for badminton gear.",
-    type: "UX/UI Design",
-    year: "2026",
-    color: COLORS.accent2,
-    img: beUI,
-    imgAlt: "Finance app UI on laptop",
+    name: "Be Badminton UI/UX",
+    desc: "The interface design for the Be Badminton shop, prototyped in Figma.",
+    type: "Figma", year: "2026", kind: "design",
+    img: img("be_ui", [640, 1200]), imgAlt: "Be Badminton interface screens",
     path: "/project/be_badminton_ui",
   },
   {
-    num: "06",
-    name: "4WD Robot Car",
-    desc: "A 4WD Robot Car built with Arduino UNO, motor driver, and ultrasonic sensor. Features line following, obstacle detection, and remote control via Bluetooth and joystick. Programmed in C++ with Arduino IDE.",
-    type: "Arduino / Robotics",
-    year: "2026",
-    color: COLORS.accent2,
-    img: robotImg,
-    imgAlt: "4WD Robot Car",
-    path: "/project/4wd_robot_car",
+    name: "4WD robot car",
+    desc: "An Arduino UNO robot with line following, obstacle detection and Bluetooth or joystick control, programmed in C++.",
+    type: "Arduino", year: "2026", kind: "build",
+    img: img("robot", [640, 1200]), imgAlt: "4WD robot car",
   },
 ];
 
-const businesses = [
-  {
-    name: "Be Badminton",
-    desc: "BE badminton is a startup business that sells badminton equipment and accessories.",
-    services: ["Badminton Rackets", "Shuttlecocks", "Custom Stringing", "Sports Apparel"],
-    links: [
-      { type: "tiktok", url: "https://www.tiktok.com/@be_withu3" },
-      { type: "facebook", url: "https://www.facebook.com/profile.php?id=61581383279455" }
-    ],
-    logo: beLogo,
-    poster: bePoster,
-    gallery: [bePoster, poster65, poster10, poster11],
-    color: COLORS.accent,
-  },
-];
+const business = {
+  name: "Be Badminton",
+  desc: "My own start-up selling badminton equipment and accessories.",
+  services: ["Rackets", "Shuttlecocks", "Custom stringing", "Sports apparel"],
+  links: [
+    { label: "TikTok", url: "https://www.tiktok.com/@be_withu3" },
+    { label: "Facebook", url: "https://www.facebook.com/profile.php?id=61581383279455" },
+  ],
+  logo: "/img/be-logo-160.webp",
+  gallery: [
+    { ...img("poster-main", [480, 1080]), w: 1080, h: 1080 },
+    { ...img("poster-65", [480, 1080]), w: 1080, h: 1080 },
+    { ...img("poster-10", [480, 1080]), w: 1080, h: 1350 },
+    { ...img("poster-11", [480, 1080]), w: 1080, h: 1350 },
+  ],
+};
 
 const contacts = [
-  { icon: "mail", label: "Email", value: "layheangrin@gmail.com", href: "mailto:layheangrin@gmail.com", target: "_blank" },
-  { icon: "code", label: "GitHub", value: "github.com/RinLayheang", href: "https://github.com/RinLayheang", target: "_blank" },
-  { icon: "link", label: "LinkedIn", value: "linkedin.com/in/rin-layheang", href: "https://www.linkedin.com/in/rin-layheang-7aab5a334", target: "_blank" },
-  { icon: "public", label: "Facebook", value: "facebook.com/rinn.layheang", href: "https://www.facebook.com/rinn.layheang.2025", target: "_blank" },
+  { label: "Email", value: "layheangrin@gmail.com", href: "mailto:layheangrin@gmail.com" },
+  { label: "GitHub", value: "github.com/RinLayheang", href: "https://github.com/RinLayheang" },
+  { label: "LinkedIn", value: "linkedin.com/in/rin-layheang", href: "https://www.linkedin.com/in/rin-layheang-7aab5a334" },
+  { label: "Facebook", value: "facebook.com/rinn.layheang", href: "https://www.facebook.com/rinn.layheang.2025" },
 ];
 
-/* ── Hooks ── */
-// Ref-based mouse position — zero re-renders, RAF-driven DOM updates only
-function useMousePosition() {
-  const posRef = useRef({ x: -100, y: -100 });
-  useEffect(() => {
-    const h = (e) => {
-      posRef.current = { x: e.clientX, y: e.clientY };
-    };
-    window.addEventListener("mousemove", h, { passive: true });
-    return () => window.removeEventListener("mousemove", h);
-  }, []);
-  return posRef; // consumers read posRef.current inside RAF loops
-}
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-function useScrollY() {
-  const [y, setY] = useState(0);
-  useEffect(() => {
-    const h = () => setY(window.scrollY);
-    window.addEventListener("scroll", h, { passive: true });
-    return () => window.removeEventListener("scroll", h);
-  }, []);
-  return y;
-}
-
-function useInView(threshold = 0.15) {
-  const ref = useRef(null);
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) setInView(true); },
-      { threshold }
-    );
-    if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return [ref, inView];
-}
-
-function useScrollDirection() {
-  const [dir, setDir] = useState("up");
-  const lastScroll = useRef(0);
-  useEffect(() => {
-    const h = () => {
-      const current = window.scrollY;
-      if (current < 10) { setDir("up"); return; }
-      if (current > lastScroll.current && current > 100) setDir("down");
-      else if (current < lastScroll.current) setDir("up");
-      lastScroll.current = current;
-    };
-    window.addEventListener("scroll", h, { passive: true });
-    return () => window.removeEventListener("scroll", h);
-  }, []);
-  return dir;
-}
-
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const h = () => setIsMobile(window.innerWidth <= 768);
-    h();
-    window.addEventListener("resize", h);
-    return () => window.removeEventListener("resize", h);
-  }, []);
-  return isMobile;
-}
-
-/* ── Cursor ── */
-function Cursor({ mouseRef }) {
-  const dotEl = useRef(null);
-  const ringEl = useRef(null);
-  const ring = useRef({ x: -100, y: -100 });
-  const [hovered, setHovered] = useState(false);
-  const rafRef = useRef();
-
-  useEffect(() => {
-    const handleMouseOver = (e) => {
-      const isInteractive = !!e.target.closest('a, button, [role="button"], .interactive, [onmouseenter]');
-      setHovered(isInteractive);
-    };
-    window.addEventListener("mouseover", handleMouseOver);
-    return () => window.removeEventListener("mouseover", handleMouseOver);
-  }, []);
-
-  useEffect(() => {
-    const animate = () => {
-      const { x, y } = mouseRef.current;
-      // dot snaps instantly
-      if (dotEl.current) {
-        dotEl.current.style.left = x + "px";
-        dotEl.current.style.top = y + "px";
-      }
-      // ring lags behind smoothly
-      ring.current.x += (x - ring.current.x) * 0.1;
-      ring.current.y += (y - ring.current.y) * 0.1;
-      if (ringEl.current) {
-        ringEl.current.style.left = ring.current.x + "px";
-        ringEl.current.style.top = ring.current.y + "px";
-      }
-      rafRef.current = requestAnimationFrame(animate);
-    };
-    rafRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, [mouseRef]);
-
-  return (
-    <>
-      <div ref={dotEl} className="cursor-el" style={{
-        position: "fixed", width: 8, height: 8,
-        background: COLORS.accent, borderRadius: "50%",
-        pointerEvents: "none", zIndex: 9999,
-        transform: `translate(-50%,-50%) scale(${hovered ? 0 : 1})`,
-        opacity: hovered ? 0 : 1,
-        mixBlendMode: "difference",
-        transition: "transform 0.3s ease, opacity 0.3s ease",
-      }} />
-      <div ref={ringEl} className="cursor-el" style={{
-        position: "fixed", width: 32, height: 32,
-        border: `1px solid ${COLORS.accent}`,
-        borderRadius: "50%", pointerEvents: "none", zIndex: 9998,
-        transform: `translate(-50%,-50%) scale(${hovered ? 2.5 : 1})`,
-        opacity: hovered ? 0.2 : 0.45,
-        transition: "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease",
-      }} />
-    </>
-  );
-}
-
-/* ── FadeIn wrapper ── */
-function Reveal({ children, delay = 0, style = {} }) {
-  const [ref, inView] = useInView();
-  return (
-    <div ref={ref} style={{
-      opacity: inView ? 1 : 0,
-      transform: inView ? "translateY(0)" : "translateY(36px)",
-      transition: `opacity 0.85s ${delay}s ease, transform 0.85s ${delay}s ease`,
-      ...style,
-    }}>
-      {children}
-    </div>
-  );
-}
-
-/* ── Animated counter ── */
-function Counter({ target, suffix = "" }) {
-  const [val, setVal] = useState(0);
-  const [ref, inView] = useInView();
-  useEffect(() => {
-    if (!inView) return;
-    if (isNaN(target)) { setVal(target); return; }
-    let start = 0;
-    const step = () => {
-      start += Math.ceil((target - start) / 8) || 1;
-      setVal(start);
-      if (start < target) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }, [inView, target]);
-  return <span ref={ref}>{isNaN(target) ? target : val}{suffix}</span>;
-}
-
-/* ── Marquee ── */
-function Marquee() {
-  const items = ["DATA ANALYST", "UI/UX DESIGN", "PYTHON", "REACT", "SQL", "FIGMA", "MACHINE LEARNING", "FRONTEND DEV", "DATA SCIENCE"];
-  const doubled = [...items, ...items];
-  return (
-    <div style={{ overflow: "hidden", borderTop: `1px solid ${COLORS.border}`, borderBottom: `1px solid ${COLORS.border}`, background: COLORS.bg, padding: "18px 0", position: "relative", zIndex: 10 }}>
-      <style>{`@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}`}</style>
-      <div style={{ display: "flex", whiteSpace: "nowrap", animation: "marquee 35s linear infinite" }}>
-        {doubled.map((item, i) => (
-          <span key={i} style={{ fontFamily: "monospace", fontSize: 13, fontWeight: 700, letterSpacing: "0.15em", color: "#6e778a", padding: "0 40px", display: "flex", alignItems: "center", gap: 40 }}>
-            {item}<span style={{ color: COLORS.accent, fontSize: 14 }}>✦</span>
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
+/* ── Icons (inline SVG instead of a multi-megabyte icon font) ── */
+const ArrowUpRight = () => (
+  <svg className="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
+);
+const Chevron = ({ dir }) => (
+  <svg className="icon" viewBox="0 0 24 24" aria-hidden="true"><path d={dir === "left" ? "m15 5-7 7 7 7" : "m9 5 7 7-7 7"} /></svg>
+);
+const Close = () => (
+  <svg className="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+);
 
 /* ── Nav ── */
-function Nav({ scrollY }) {
-  const sections = ["about", "skills", "projects", "business", "contact"];
-  const dir = useScrollDirection();
-  const isMobile = useIsMobile();
-  const scrolled = scrollY > 60;
-  const isHidden = isMobile && dir === "down";
-
+function Nav() {
+  const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  useEffect(() => {
+    let last = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      // setState with an unchanged boolean bails out, so this only renders on threshold changes
+      setScrolled(y > 40);
+      setHidden(y > 120 && y > last);
+      last = y;
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   return (
-    <nav className="nav-container" style={{
-      position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-      display: "flex", alignItems: "center", justifyContent: "space-between",
-      padding: "22px 56px",
-      borderBottom: `1px solid ${scrolled ? COLORS.border : "transparent"}`,
-      backdropFilter: scrolled ? "blur(20px)" : "none",
-      background: scrolled ? "rgba(0,0,0,0.85)" : "transparent",
-      transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-      transform: isHidden ? "translateY(-100%)" : "translateY(0)",
-    }}>
-      <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, letterSpacing: "0.1em", color: COLORS.accent }}>LAYHEANG</div>
-      <div className="nav-links" style={{ display: "flex", gap: 36 }}>
-        {sections.map(s => (
-          <a key={s} href={`#${s}`} style={{ fontFamily: "monospace", fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: COLORS.muted, textDecoration: "none", transition: "color 0.2s" }}
-            onMouseEnter={e => e.target.style.color = COLORS.accent}
-            onMouseLeave={e => e.target.style.color = COLORS.muted}>
-            {s}
-          </a>
-        ))}
-      </div>
-    </nav>
+    <header className={`nav${scrolled ? " is-scrolled" : ""}${hidden ? " is-hidden" : ""}`}>
+      <a href="#top" className="nav-brand">Rin Layheang</a>
+      <nav aria-label="Sections">
+        <ul className="nav-links">
+          <li><a href="#about">About</a></li>
+          <li><a href="#skills">Skills</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#business">Business</a></li>
+          <li><a href="#contact" className="nav-cta">Contact <ArrowUpRight /></a></li>
+        </ul>
+      </nav>
+    </header>
   );
 }
 
 /* ── Hero ── */
-function Hero() {
-  const [loaded, setLoaded] = useState(false);
-  useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
-  const anim = (delay) => ({
-    opacity: loaded ? 1 : 0,
-    transform: loaded ? "translateY(0)" : "translateY(32px)",
-    transition: `opacity 1s ${delay}s ease, transform 1s ${delay}s ease`,
+// Contour lines drawn as a density plot around three "cluster" centres; built once at load.
+const contourPaths = (() => {
+  const centres = [[260, 250, 1.0], [1180, 190, 0.8], [900, 760, 1.15]];
+  const paths = [];
+  centres.forEach(([cx, cy, scale], c) => {
+    for (let ring = 1; ring <= 7; ring++) {
+      const base = ring * 46 * scale;
+      let d = "";
+      for (let i = 0; i <= 64; i++) {
+        const a = (i / 64) * Math.PI * 2;
+        const r = base * (1 + 0.16 * Math.sin(a * 3 + c * 2 + ring * 0.35) + 0.08 * Math.cos(a * 5 - c));
+        d += `${i ? "L" : "M"}${(cx + Math.cos(a) * r * 1.25).toFixed(1)} ${(cy + Math.sin(a) * r).toFixed(1)}`;
+      }
+      paths.push(d + "Z");
+    }
   });
+  return paths;
+})();
+
+const Icon = ({ d }) => (
+  <svg className="icon" viewBox="0 0 24 24" aria-hidden="true"><path d={d} /></svg>
+);
+const ICONS = {
+  pin: "M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Zm0-9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z",
+  cap: "M2 9l10-5 10 5-10 5L2 9Zm4 2.5V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.5M22 9v6",
+  code: "m8 8-4 4 4 4m8-8 4 4-4 4m-2-11-4 14",
+};
+
+// Illustrative monthly temperature curve (°C) for the latest-project panel sparkline
+const sparkline = [26.6, 27.8, 29.2, 30.1, 29.9, 29.0, 28.5, 28.4, 28.1, 27.7, 27.1, 26.3];
+
+// Both portrait layers share one crop, so they line up pixel for pixel
+const heroSrc = (name) => ({
+  src: `/img/${name}-933.webp`,
+  srcSet: `/img/${name}-600.webp 600w, /img/${name}-933.webp 933w, /img/${name}-1866.webp 1866w`,
+});
+const HERO_SIZES = "(max-width: 1024px) 100vw, 90vh";
+
+function Hero() {
+  const canvasRef = useRef(null);
+  const photoRef = useRef(null);
+  const altRef = useRef(null);
+  const effectRef = useRef(null);
+  // intro: chrome version shown as a plain <img> until WebGL takes over and burns it into the photo.
+  // static: plain images with a crossfade, when motion is reduced or WebGL isn't available.
+  const [mode, setMode] = useState(() => (prefersReducedMotion() ? "static" : "intro"));
+  // which version the visitor asked for: the real photo or the chrome-and-python version
+  const [layer, setLayer] = useState("photo");
+  const layerRef = useRef(layer);
+
+  useEffect(() => {
+    let cancelled = false;
+    const reduced = prefersReducedMotion();
+    // a fresh Image of the chosen file: with srcset, the DOM img reports density-corrected
+    // natural sizes, which makes WebGL allocate a texture smaller than the real bitmap
+    const load = async (el) => {
+      const img = new Image();
+      img.src = el.currentSrc || el.src;
+      await img.decode();
+      return img;
+    };
+    const start = async () => {
+      try {
+        const [photo, alt, { mountPortraitReveal }] = await Promise.all([
+          load(photoRef.current), load(altRef.current), import("./portraitReveal.js"),
+        ]);
+        if (cancelled) return;
+        effectRef.current = mountPortraitReveal(canvasRef.current, photo, alt, { reducedMotion: reduced });
+        effectRef.current.show(layerRef.current); // honour a switch pressed before WebGL was ready
+        setMode("webgl");
+      } catch {
+        if (!cancelled) setMode("static");
+      }
+    };
+    const idle = window.requestIdleCallback
+      ? window.requestIdleCallback(start, { timeout: 800 })
+      : setTimeout(start, 200);
+    return () => {
+      cancelled = true;
+      window.cancelIdleCallback ? window.cancelIdleCallback(idle) : clearTimeout(idle);
+      effectRef.current?.destroy();
+      effectRef.current = null;
+    };
+  }, []);
+
+  const switchLayer = () => {
+    const next = layer === "photo" ? "alt" : "photo";
+    layerRef.current = next;
+    setLayer(next);
+    effectRef.current?.show(next);
+    if (mode === "intro" && !effectRef.current) setMode("static");
+  };
+
+  const max = Math.max(...sparkline), min = Math.min(...sparkline);
+  const points = sparkline.map((v, i) => `${(i / (sparkline.length - 1)) * 100},${28 - ((v - min) / (max - min)) * 24}`).join(" ");
 
   return (
-    <section id="home" className="hero-section" style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 8%", position: "relative", overflow: "hidden" }}>
-      {/* Grid BG */}
-      <div style={{
-        position: "absolute", inset: 0,
-        backgroundImage: `linear-gradient(rgba(77,240,192,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(77,240,192,0.03) 1px,transparent 1px)`,
-        backgroundSize: "60px 60px",
-        WebkitMaskImage: "radial-gradient(ellipse 70% 70% at 50% 50%,black 0%,transparent 100%)",
-        maskImage: "radial-gradient(ellipse 70% 70% at 50% 50%,black 0%,transparent 100%)",
-        zIndex: 0,
-      }} />
+    <section id="top" className="hero">
+      <svg className="hero-contours" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        {contourPaths.map((d, i) => <path key={i} d={d} />)}
+      </svg>
 
-      <div className="hero-content" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", zIndex: 2, width: "100%" }}>
-        <div style={{ flex: 1 }} className="hero-text">
-          <div style={{ ...anim(0.1), fontFamily: "monospace", fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase", color: COLORS.accent, marginBottom: 28, display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ width: 30, height: 1, background: COLORS.accent }} /> Portfolio · Data Science · CADT
-          </div>
-          <h1 style={{ ...anim(0.3), fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(80px, 15vw, 180px)", lineHeight: 0.82, letterSpacing: "-0.01em", margin: 0, textTransform: "uppercase" }}>
-            <span style={{ color: COLORS.white }}>Rin</span><br />
-            <span style={{ color: COLORS.accent }}>Layheang</span>
-          </h1>
-          <p style={{ ...anim(0.5), fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontSize: "clamp(20px, 3.5vw, 42px)", color: COLORS.muted, marginTop: 24, letterSpacing: "0.02em" }}>
-            2nd Year Data Science Student
-          </p>
-        </div>
+      <div className="hero-intro">
+        <h1 className="hero-name"><span>Rin</span> <span>Layheang</span></h1>
+        <ul className="hero-meta">
+          <li><Icon d={ICONS.pin} />Phnom Penh, Cambodia</li>
+          <li><Icon d={ICONS.cap} />Data Science, year 2 at CADT</li>
+          <li><Icon d={ICONS.code} />Data, full-stack and UI/UX</li>
+        </ul>
+      </div>
 
-        <div className="hero-image-container" style={{ ...anim(0.4), position: "relative", flex: "0 0 55%", display: "flex", justifyContent: "center", transform: "translateY(60px)" }}>
-          {/* Subtle Glow behind image */}
-          <div style={{ position: "absolute", inset: "0", background: `radial-gradient(circle, ${COLORS.accent}12 0%, transparent 70%)`, filter: "blur(50px)", zIndex: -1 }} />
-          <picture style={{ width: "100%", height: "auto" }}>
-            <source media="(max-width: 768px)" srcSet={profileImgMobile} />
-            <img src={profileImg} alt="Rin Layheang" style={{ width: "100%", height: "auto", objectFit: "contain", filter: "drop-shadow(0 20px 40px rgba(70, 159, 144, 0.4))" }} />
-          </picture>
+      <div className="hero-stage">
+        <div className={`hero-portrait is-${mode}`} data-layer={layer}>
+          <img
+            ref={altRef}
+            className="layer-alt"
+            {...heroSrc("hero-chrome")}
+            sizes={HERO_SIZES}
+            width="933" height="871"
+            alt=""
+            fetchPriority="high"
+          />
+          <img
+            ref={photoRef}
+            className="layer-photo"
+            {...heroSrc("hero-photo")}
+            sizes={HERO_SIZES}
+            width="933" height="871"
+            alt="Portrait of Rin Layheang"
+          />
+          <canvas ref={canvasRef} aria-hidden="true" />
         </div>
       </div>
 
-      {/* Bottom Row */}
-      <div className="hero-bottom" style={{ position: "absolute", bottom: 60, left: "8%", right: "8%", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
-        <p className="hero-desc" style={{ ...anim(0.7), maxWidth: 280, fontFamily: "monospace", fontSize: 12, lineHeight: 1.8, color: COLORS.muted, textAlign: "left" }}>
-          Turning raw data into meaningful stories — through analysis, interfaces, and design. Based in Phnom Penh, Cambodia.
-        </p>
-        <div className="hero-scroll-wrapper">
-          <ScrollIndicator loaded={loaded} />
+      <aside className="hero-panels" aria-label="At a glance">
+        <div className="hud">
+          <p className="hud-label">Currently</p>
+          <p className="hud-title">Data Science student</p>
+          <p className="hud-sub">Cambodia Academy of Digital Technology</p>
         </div>
+        <Link to="/project/weather_analyzer" className="hud hud-link">
+          <p className="hud-label">Latest project</p>
+          <p className="hud-title">Weather Analyzer</p>
+          <p className="hud-sub">Python, 2026</p>
+          <svg className="hud-spark" viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden="true">
+            <polyline points={points} />
+          </svg>
+        </Link>
+        <div className="hud">
+          <p className="hud-label">At a glance</p>
+          <dl className="hud-stats">
+            <div><dt>Projects</dt><dd>{projects.length}</dd></div>
+            <div><dt>Skill areas</dt><dd>{disciplines.length}</dd></div>
+            <div><dt>Business</dt><dd>1</dd></div>
+          </dl>
+        </div>
+      </aside>
+
+      <div className="hero-bar">
+        <button type="button" className="hero-switch" onClick={switchLayer} aria-pressed={layer === "alt"}>
+          <span className="switch-icon" aria-hidden="true">
+            <svg className="icon" viewBox="0 0 24 24"><path d="M4 8h13m0 0-3.5-3.5M17 8l-3.5 3.5M20 16H7m0 0 3.5-3.5M7 16l3.5 3.5" /></svg>
+          </span>
+          <span>
+            <span className="hero-switch-title">{layer === "photo" ? "Show aura" : "Show steav"}</span>
+            <span className="hero-switch-sub">Switch portrait</span>
+          </span>
+        </button>
+        <a href="#projects" className="hero-cta">View projects <ArrowUpRight /></a>
+        <ul className="hero-social">
+          <li><a href="https://github.com/RinLayheang" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+          <li><a href="https://www.linkedin.com/in/rin-layheang-7aab5a334" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+          <li><a href="https://www.facebook.com/rinn.layheang.2025" target="_blank" rel="noopener noreferrer">Facebook</a></li>
+        </ul>
       </div>
     </section>
   );
 }
 
-function ScrollIndicator({ loaded }) {
+/* ── Shared section pieces (same language as the hero) ── */
+function Contours() {
   return (
-    <div style={{
-      opacity: loaded ? 1 : 0,
-      transform: loaded ? "translateY(0)" : "translateY(20px)",
-      transition: "all 1s 1s ease",
-      display: "flex", flexDirection: "column", alignItems: "center", gap: 12,
-      fontFamily: "monospace", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: COLORS.muted
-    }}>
-      <style>{`@keyframes scrollPulse{0%,100%{transform:scaleY(0.7);opacity:0.3}50%{transform:scaleY(1);opacity:1}}`}</style>
-      SCROLL
-      <div style={{ width: 1, height: 48, background: `linear-gradient(to bottom,${COLORS.accent},transparent)`, transformOrigin: "top", animation: "scrollPulse 2s infinite" }} />
+    <svg className="contours" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      {contourPaths.map((d, i) => <path key={i} d={d} />)}
+    </svg>
+  );
+}
+
+function SectionHead({ title, label, sub }) {
+  return (
+    <div className="sec-head">
+      <h2 className="cond sec-title">{title}</h2>
+      <div className="sec-meta">
+        <p className="hud-label">{label}</p>
+        {sub && <p className="sec-sub">{sub}</p>}
+      </div>
     </div>
   );
 }
 
 /* ── About ── */
 function About() {
-  const stats = [
-    { num: "2nd", label: "Year at CADT" },
-    { num: 3, label: "Disciplines" },
-    { icon: "all_inclusive", label: "Curiosity" },
-    { num: "KH", label: "Phnom Penh" },
-  ];
   return (
-    <section id="about" className="about-section section-padding" style={{ padding: "140px 56px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
-      <Reveal>
-        <SectionLabel>About Me</SectionLabel>
-        <h2 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(34px,3.5vw,52px)", lineHeight: 1.1, color: COLORS.white, marginBottom: 26 }}>
-          Crafting with <em style={{ color: COLORS.accent, fontStyle: "italic" }}>data</em> & design.
-        </h2>
-        <p style={{ fontFamily: "monospace", fontSize: 13, lineHeight: 1.9, color: COLORS.muted, marginBottom: 14 }}>
-          I'm a 2nd year Data Science student at the Cambodia Academy of Digital Technology (CADT), passionate about the intersection of data, design, and technology.
-        </p>
-        <p style={{ fontFamily: "monospace", fontSize: 13, lineHeight: 1.9, color: COLORS.muted, marginBottom: 32 }}>
-          I believe great interfaces tell stories — and great data does too. My work bridges analytical thinking with visual communication.
-        </p>
-        <CtaButton href="#contact">Get in Touch →</CtaButton>
-      </Reveal>
-      <Reveal delay={0.15}>
-        <div className="skills-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
-          {stats.map((s, i) => <StatCard key={i} {...s} />)}
+    <section id="about" className="section tone tone-ink">
+      <Contours />
+      <SectionHead title="About" label="Who I am" sub="Phnom Penh, Cambodia" />
+      <div className="about">
+        <div className="about-text">
+          <p>
+            I'm a second-year Data Science student at the Cambodia Academy of Digital Technology (CADT). I'm interested in where data, design and technology meet.
+          </p>
+          <p>
+            Good interfaces tell stories, and so does good data. My work joins analytical thinking with visual communication.
+          </p>
         </div>
-      </Reveal>
-    </section>
-  );
-}
-
-function StatCard({ num, icon, label }) {
-  const [hov, setHov] = useState(false);
-  return (
-    <div onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)} className="interactive"
-      style={{ background: hov ? "#161b22" : COLORS.card, border: `1px solid ${hov ? COLORS.accent : COLORS.border}`, padding: "28px 24px", transition: "all 0.3s" }}>
-      <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 52, color: COLORS.accent, lineHeight: 1, display: "flex", alignItems: "center", minHeight: 52 }}>
-        {icon ? (
-          <span className="material-symbols-outlined" style={{ fontSize: 48 }}>{icon}</span>
-        ) : (
-          <Counter target={num} />
-        )}
+        <dl className="facts">
+          <div className="hud"><dt className="hud-label">Studying</dt><dd>Data Science, year 2, CADT</dd></div>
+          <div className="hud"><dt className="hud-label">Based in</dt><dd>Phnom Penh, Cambodia</dd></div>
+          <div className="hud"><dt className="hud-label">Works across</dt><dd>Data, code and design</dd></div>
+          <div className="hud"><dt className="hud-label">Runs</dt><dd>Be Badminton, a gear shop</dd></div>
+        </dl>
       </div>
-      <div style={{ fontFamily: "monospace", fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: COLORS.muted, marginTop: 6 }}>{label}</div>
-    </div>
+    </section>
   );
 }
 
 /* ── Skills ── */
+// decorative bar shapes for each skill panel
+const skillBars = { data: [40, 65, 50, 85, 70, 95], build: [55, 45, 80, 60, 90, 75], design: [70, 50, 60, 40, 80, 65] };
+const skillShort = { data: "Data", build: "Build", design: "Design" };
+
 function Skills() {
   return (
-    <section id="skills" className="section-padding" style={{ padding: "0 56px 140px" }}>
-      <Reveal>
-        <SectionLabel>What I Do</SectionLabel>
-        <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(52px,7vw,100px)", lineHeight: 1, color: COLORS.white, marginBottom: 56 }}>
-          Skills &<br />Expertise
-        </h2>
-      </Reveal>
-      <div className="skills-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 2 }}>
-        {skills.map((s, i) => <SkillCard key={i} {...s} delay={i * 0.12} />)}
+    <section id="skills" className="section">
+      <Contours />
+      <SectionHead title="Skills" label="What I work with" sub={`${disciplines.length} areas`} />
+      <div className="skills-grid">
+        {disciplines.map((d) => (
+          <article key={d.key} className="hud skill">
+            <p className="hud-label">{skillShort[d.key]}</p>
+            <h3 className="cond">{d.title}</h3>
+            <p className="skill-desc">{d.desc}</p>
+            <ul className="tags">
+              {d.tags.map((t) => <li key={t}>{t}</li>)}
+            </ul>
+            <div className="bars" aria-hidden="true">
+              {skillBars[d.key].map((h, i) => <i key={i} style={{ height: `${h}%`, animationDelay: `${i * 0.05}s` }} />)}
+            </div>
+          </article>
+        ))}
       </div>
     </section>
-  );
-}
-
-function SkillCard({ icon, title, desc, tags, color, delay }) {
-  const [hov, setHov] = useState(false);
-  return (
-    <Reveal delay={delay}>
-      <div onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)} className="interactive"
-        style={{ background: hov ? "#14181f" : COLORS.card, border: `1px solid ${hov ? color : COLORS.border}`, padding: "40px 32px", position: "relative", overflow: "hidden", transition: "all 0.4s", height: "100%" }}>
-        <div style={{ position: "absolute", inset: 0, background: `linear-gradient(135deg,${color}0a 0%,transparent 60%)`, opacity: hov ? 1 : 0, transition: "opacity 0.4s" }} />
-        <div style={{ fontSize: 34, marginBottom: 18, color }}>{icon}</div>
-        <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 28, letterSpacing: "0.04em", color: COLORS.white, marginBottom: 14 }}>{title}</div>
-        <p style={{ fontFamily: "monospace", fontSize: 12, lineHeight: 1.85, color: COLORS.muted, marginBottom: 24 }}>{desc}</p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {tags.map((t, i) => (
-            <span key={i} style={{ fontFamily: "monospace", fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", padding: "5px 12px", border: `1px solid ${hov ? color + "55" : COLORS.border}`, color: hov ? color : COLORS.muted, transition: "all 0.3s" }}>{t}</span>
-          ))}
-        </div>
-      </div>
-    </Reveal>
   );
 }
 
 /* ── Projects ── */
-function Projects() {
+function ProjectCard({ p }) {
   return (
-    <section id="projects" className="section-padding" style={{ padding: "0 56px 140px" }}>
-      <Reveal>
-        <SectionLabel>Work</SectionLabel>
-        <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(52px,7vw,100px)", lineHeight: 1, color: COLORS.white, marginBottom: 60 }}>
-          Selected<br />Projects
-        </h2>
-      </Reveal>
-      {/* Featured top row: 2 wide cards */}
-      <div className="projects-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3, marginBottom: 3 }}>
-        {projects.slice(0, 2).map((p, i) => <ProjectCard key={i} {...p} delay={i * 0.1} />)}
+    <li className="project">
+      <div className="project-media burn">
+        <img
+          src={p.img.src}
+          srcSet={p.img.srcSet}
+          sizes="(max-width: 900px) 92vw, 46vw"
+          width="1200" height="630"
+          alt={p.imgAlt}
+          loading="lazy"
+          decoding="async"
+        />
       </div>
-      {/* Bottom row: 2 wide + list hybrid */}
-      <div className="projects-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3 }}>
-        {projects.slice(2, 4).map((p, i) => <ProjectCard key={i} {...p} delay={0.2 + i * 0.1} />)}
+      <div className="project-row">
+        <div>
+          <p className="hud-label">{p.type} · {p.year}</p>
+          <h3 className="cond">{p.name}</h3>
+        </div>
+        {p.path && <Link to={p.path} className="cut-btn">View <ArrowUpRight /></Link>}
       </div>
-      <div className="projects-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3 }}>
-        {projects.slice(4, 6).map((p, i) => <ProjectCard key={i} {...p} delay={0.2 + i * 0.1} />)}
-      </div>
-    </section>
+      <p className="project-desc">{p.desc}</p>
+    </li>
   );
 }
 
-function ProjectCard({ num, name, desc, type, year, color, img, imgAlt, delay, path }) {
-  const [hov, setHov] = useState(false);
-  const CardContent = (
-    <div
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={() => setHov(false)}
-      className="interactive"
-      style={{
-        background: COLORS.card,
-        border: `1px solid ${hov ? color : COLORS.border}`,
-        overflow: "hidden",
-        position: "relative",
-        transition: "border-color 0.4s",
-        cursor: "none",
-        height: "100%",
-      }}
-    >
-      {/* Image */}
-      <div style={{ position: "relative", overflow: "hidden", aspectRatio: "1.9 / 1" }}>
-        <img
-          src={img}
-          alt={imgAlt}
-          style={{
-            width: "100%", height: "100%", objectFit: "cover",
-            transform: hov ? "scale(1.06)" : "scale(1)",
-            transition: "transform 0.6s ease",
-            display: "block",
-          }}
-        />
-        {/* Dark overlay */}
-        <div style={{
-          position: "absolute", inset: 0,
-          background: `linear-gradient(to bottom, transparent 30%, ${COLORS.bg}dd 100%)`,
-        }} />
-        {/* Color tint on hover */}
-        <div style={{
-          position: "absolute", inset: 0,
-          background: color + "22",
-          opacity: hov ? 1 : 0,
-          transition: "opacity 0.4s",
-        }} />
-        {/* Type badge top-right */}
-        <div style={{
-          position: "absolute", top: 16, right: 16,
-          fontFamily: "monospace", fontSize: 10, letterSpacing: "0.15em",
-          textTransform: "uppercase", color: color,
-          border: `1px solid ${color}55`,
-          background: COLORS.bg + "cc",
-          padding: "4px 12px",
-          backdropFilter: "blur(8px)",
-        }}>{type}</div>
-        {/* Number top-left */}
-        <div style={{
-          position: "absolute", top: 16, left: 16,
-          fontFamily: "'Bebas Neue', sans-serif", fontSize: 15,
-          letterSpacing: "0.1em", color: COLORS.muted,
-        }}>{num}</div>
-      </div>
-
-      {/* Content */}
-      <div style={{ padding: "24px 28px 28px" }}>
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 10 }}>
-          <div style={{ fontFamily: "Georgia, serif", fontSize: 19, color: COLORS.white, lineHeight: 1.25 }}>{name}</div>
-          <span className="material-symbols-outlined" style={{
-            fontSize: 20, color: hov ? color : COLORS.muted,
-            transform: hov ? "translate(2px,-2px)" : "none",
-            transition: "all 0.2s", flexShrink: 0,
-          }}>north_east</span>
-        </div>
-        <p style={{ fontFamily: "monospace", fontSize: 12, color: COLORS.muted, lineHeight: 1.7, marginBottom: 18 }}>{desc}</p>
-        {/* Bottom row */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ width: 32, height: 1, background: `linear-gradient(to right,${color},transparent)` }} />
-          <span style={{ fontFamily: "monospace", fontSize: 11, color: COLORS.muted }}>{year}</span>
-        </div>
-      </div>
-
-      {/* Left accent bar */}
-      <div style={{
-        position: "absolute", left: 0, top: 0, bottom: 0, width: 3,
-        background: color,
-        transform: hov ? "scaleY(1)" : "scaleY(0)",
-        transformOrigin: "top",
-        transition: "transform 0.4s ease",
-      }} />
-    </div>
-  );
-
+function Projects() {
+  const years = projects.map((p) => p.year).sort();
   return (
-    <Reveal delay={delay}>
-      {path ? (
-        <Link to={path} style={{ textDecoration: "none", cursor: "none" }}>
-          {CardContent}
-        </Link>
-      ) : (
-        CardContent
-      )}
-    </Reveal>
+    <section id="projects" className="section">
+      <Contours />
+      <SectionHead title="Projects" label="Selected work" sub={`${years[0]} – ${years[years.length - 1]}`} />
+      <ul className="projects-grid">
+        {projects.map((p) => <ProjectCard key={p.name} p={p} />)}
+      </ul>
+    </section>
   );
 }
 
 /* ── Business ── */
-function Business({ setFullscreenImg }) {
+function Business({ onOpen }) {
   return (
-    <section id="business" className="section-padding" style={{ padding: "0 56px 140px" }}>
-      <Reveal>
-        <SectionLabel>My own business</SectionLabel>
-        <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(52px,7vw,100px)", lineHeight: 1, color: COLORS.white, marginBottom: 56 }}>
-          Ventures &<br />Entrepreneurship
-        </h2>
-      </Reveal>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 3 }}>
-        {businesses.map((b, i) => <BusinessCard key={i} {...b} delay={i * 0.1} setFullscreenImg={setFullscreenImg} />)}
+    <section id="business" className="section">
+      <Contours />
+      <SectionHead title="Business" label="My own start-up" />
+      <div className="hud business">
+        <div className="business-head">
+          <img src={business.logo} width="80" height="80" alt="" className="business-logo" loading="lazy" />
+          <div>
+            <p className="hud-label">Founder</p>
+            <h3 className="cond">{business.name}</h3>
+            <p className="business-desc">{business.desc}</p>
+            <ul className="tags">
+              {business.services.map((s) => <li key={s}>{s}</li>)}
+            </ul>
+          </div>
+          <ul className="business-links">
+            {business.links.map((l) => (
+              <li key={l.label}>
+                <a href={l.url} target="_blank" rel="noopener noreferrer" className="cut-btn">{l.label} <ArrowUpRight /></a>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <ul className="gallery" aria-label="Be Badminton posters">
+          {business.gallery.map((g, i) => (
+            <li key={g.src} className="gallery-item">
+              <button type="button" className="burn" onClick={() => onOpen(i)} aria-label={`Open poster ${i + 1} of ${business.gallery.length}`}>
+                <img src={g.srcSet.split(" ")[0]} srcSet={g.srcSet} sizes="320px" width={g.w} height={g.h} alt="" loading="lazy" decoding="async" />
+              </button>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );
 }
 
-function BusinessCard({ name, desc, services, links, logo, poster, gallery, color, delay, setFullscreenImg }) {
-  const [hov, setHov] = useState(false);
-  const scrollRef = useRef(null);
-
-  // Manual Drag to Scroll
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [startScrollLeft, setStartScrollLeft] = useState(0);
-  const dragDistance = useRef(0);
-
-  const handleMouseDown = (e) => {
-    setIsDragging(true);
-    dragDistance.current = 0;
-    setStartX(e.pageX - scrollRef.current.offsetLeft);
-    setStartScrollLeft(scrollRef.current.scrollLeft);
-  };
-
-  const handleMouseLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = (x - startX) * 2; // scroll speed
-    dragDistance.current = Math.abs(walk);
-    scrollRef.current.scrollLeft = startScrollLeft - walk;
-  };
-
-  const handleImageClick = (images, index) => {
-    // Only open if they didn't drag
-    if (dragDistance.current < 10) {
-      setFullscreenImg({ images, index });
-    }
-  };
-
+function Lightbox({ index, setIndex }) {
+  const images = business.gallery;
+  const closeRef = useRef(null);
+  const close = useCallback(() => setIndex(null), [setIndex]);
+  const step = useCallback(
+    (d) => setIndex((i) => Math.min(images.length - 1, Math.max(0, i + d))),
+    [setIndex, images.length]
+  );
   useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-
-    let rafId;
-    let direction = 1;
-    let currentScroll = el.scrollLeft;
-    const speed = 0.5;
-
-    const animate = () => {
-      const maxScroll = el.scrollWidth - el.clientWidth;
-      if (!isDragging && maxScroll > 0) {
-        currentScroll += speed * direction;
-        if (currentScroll >= maxScroll) {
-          currentScroll = maxScroll;
-          direction = -1;
-        } else if (currentScroll <= 0) {
-          currentScroll = 0;
-          direction = 1;
-        }
-        el.scrollLeft = currentScroll;
-      } else {
-        currentScroll = el.scrollLeft;
-      }
-      rafId = requestAnimationFrame(animate);
+    closeRef.current?.focus();
+    const onKey = (e) => {
+      if (e.key === "Escape") close();
+      if (e.key === "ArrowRight") step(1);
+      if (e.key === "ArrowLeft") step(-1);
     };
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [close, step]);
 
-    rafId = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(rafId);
-  }, [hov, isDragging]);
-
+  const g = images[index];
   return (
-    <Reveal delay={delay}>
-      <div
-        onMouseEnter={() => setHov(true)}
-        onMouseLeave={() => setHov(false)}
-        className="interactive business-card"
-        style={{
-          background: COLORS.card,
-          border: `1px solid ${hov ? color : COLORS.border}`,
-          padding: "48px 40px",
-          position: "relative",
-          transition: "all 0.3s",
-          overflow: "hidden",
-          display: "flex",
-          flexDirection: "column",
-          gap: 32
-        }}
-      >
-        <div style={{ position: "absolute", inset: 0, background: `linear-gradient(135deg, ${color}0a 0%, transparent 50%)`, opacity: hov ? 1 : 0, transition: "opacity 0.4s" }} />
-
-        {/* Top Header Row with Logo on Left */}
-        <div className="business-header" style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "flex-start", gap: 24 }}>
-          {logo && (
-            <div style={{ flexShrink: 0 }}>
-              <img src={logo} alt="Logo" style={{ width: 80, height: 80, borderRadius: "50%", border: `2px solid ${color}`, padding: 4, background: COLORS.surface }} />
-            </div>
-          )}
-          <div style={{ flex: 1 }}>
-            <div className="business-name" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 48, color: COLORS.white, marginBottom: 16, letterSpacing: "0.02em" }}>{name}</div>
-            <div className="business-links" style={{ display: "flex", gap: 20, marginBottom: 14 }}>
-              {links.map((link, i) => (
-                <a key={i} href={link.url} target="_blank" rel="noopener noreferrer"
-                  style={{ color: hov ? color : COLORS.muted, transition: "color 0.3s", display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
-                  {link.type === 'tiktok' ? (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.9-.32-1.92-.35-2.81.07-.67.32-1.28.87-1.58 1.56-.57 1.08-.29 2.48.62 3.32.74.77 1.84 1.06 2.87.92 1.09-.13 2.13-.88 2.53-1.94.1-.22.18-.44.23-.67.05-2.45.02-4.9.03-7.35z" /></svg>
-                  ) : (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
-                  )}
-                  <span style={{ fontFamily: "monospace", fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase" }}>{link.type}</span>
-                </a>
-              ))}
-            </div>
-            <p className="business-desc" style={{ fontFamily: "monospace", fontSize: 13, color: COLORS.muted, lineHeight: 1.8, maxWidth: "85%" }}>{desc}</p>
-          </div>
-        </div>
-
-        {/* Services & Links */}
-        <div className="business-services" style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 14 }}>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-            {services.map((s, i) => (
-              <span key={i} style={{
-                fontFamily: "monospace", fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase",
-                padding: "6px 14px", border: `1px solid ${hov ? color + "44" : COLORS.border}`, color: hov ? color : COLORS.muted,
-                transition: "all 0.3s"
-              }}>{s}</span>
-            ))}
-          </div>
-
-        </div>
-
-        {/* Horizontal Scroll Gallery (Figma/Insta style) */}
-        <div className="business-gallery-wrapper" style={{ position: "relative", zIndex: 1, margin: "0 -40px" }}>
-          <div
-            className="business-gallery"
-            ref={scrollRef}
-            onMouseDown={handleMouseDown}
-            onMouseLeave={handleMouseLeave}
-            onMouseUp={handleMouseUp}
-            onMouseMove={handleMouseMove}
-            onTouchStart={() => setIsDragging(true)}
-            onTouchEnd={() => setIsDragging(false)}
-            onTouchCancel={() => setIsDragging(false)}
-            style={{
-              display: "flex",
-              gap: 20,
-              overflowX: "auto",
-              padding: "0 40px",
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-              cursor: isDragging ? "grabbing" : "grab"
-            }}
-          >
-            <style>{`.interactive div::-webkit-scrollbar { display: none; }`}</style>
-            {(() => {
-              const uniqueImages = [poster, ...(gallery || [])].filter((img, i, self) => self.indexOf(img) === i);
-              return uniqueImages.map((img, i) => (
-                <div key={i} className="interactive business-gallery-item" style={{ flex: "0 0 320px", height: "450px", overflow: "hidden", border: `1px solid ${COLORS.border}` }} onClick={() => handleImageClick(uniqueImages, i)}>
-                  <img
-                    src={img}
-                    alt={`${name} work ${i}`}
-                    style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.5s ease" }}
-                    onMouseEnter={e => e.target.style.transform = "scale(1.05)"}
-                    onMouseLeave={e => e.target.style.transform = "scale(1)"}
-                  />
-                </div>
-              ));
-            })()}
-          </div>
-        </div>
-      </div>
-    </Reveal>
+    <div className="lightbox" role="dialog" aria-modal="true" aria-label="Poster viewer" onClick={close}>
+      <button ref={closeRef} type="button" className="lb-btn lb-close" onClick={close} aria-label="Close"><Close /></button>
+      {index > 0 && (
+        <button type="button" className="lb-btn lb-prev" onClick={(e) => { e.stopPropagation(); step(-1); }} aria-label="Previous poster"><Chevron dir="left" /></button>
+      )}
+      {index < images.length - 1 && (
+        <button type="button" className="lb-btn lb-next" onClick={(e) => { e.stopPropagation(); step(1); }} aria-label="Next poster"><Chevron dir="right" /></button>
+      )}
+      <img key={g.src} src={g.src} width={g.w} height={g.h} alt={`Be Badminton poster ${index + 1}`} onClick={(e) => e.stopPropagation()} />
+    </div>
   );
 }
 
 /* ── Contact ── */
 function Contact() {
   return (
-    <section id="contact" className="contact-section section-padding" style={{ padding: "0 56px 120px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
-      <Reveal>
-        <SectionLabel>Contact</SectionLabel>
-        <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(64px,9vw,120px)", lineHeight: 0.88, color: COLORS.white }}>
-          Let's<br /><span style={{ color: COLORS.accent }}>Work.</span>
-        </h2>
-        <p style={{ fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: 18, color: COLORS.muted, marginTop: 20 }}>
-          Open to projects, collaborations & opportunities.
-        </p>
-      </Reveal>
-      <Reveal delay={0.15}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          {contacts.map((c, i) => <ContactRow key={i} {...c} />)}
-        </div>
-      </Reveal>
-    </section>
-  );
-}
-
-function ContactRow({ icon, label, value, href, target }) {
-  const [hov, setHov] = useState(false);
-  return (
-    <a href={href} target={target} rel="noopener noreferrer" onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)} className="interactive"
-      style={{ background: hov ? "#101418" : COLORS.card, border: `1px solid ${hov ? COLORS.accent : COLORS.border}`, padding: "22px 26px", display: "flex", alignItems: "center", justifyContent: "space-between", textDecoration: "none", transition: "all 0.3s" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-        <span className="material-symbols-outlined" style={{ fontSize: 22, color: COLORS.accent }}>{icon}</span>
-        <div>
-          <div style={{ fontFamily: "monospace", fontSize: 10, letterSpacing: "0.16em", textTransform: "uppercase", color: COLORS.muted }}>{label}</div>
-          <div style={{ fontFamily: "monospace", fontSize: 13, color: COLORS.white, marginTop: 3 }}>{value}</div>
-        </div>
+    <section id="contact" className="section contact tone tone-ink">
+      <Contours />
+      <div>
+        <h2 className="cond contact-title">Let's<br />work.</h2>
+        <p className="contact-sub">I'm open to projects, collaborations and internships.</p>
       </div>
-      <span className="material-symbols-outlined" style={{
-        color: hov ? COLORS.accent : COLORS.muted,
-        transform: hov ? "translate(2px,-2px)" : "none",
-        transition: "all 0.2s",
-        fontSize: 20
-      }}>north_east</span>
-    </a>
-  );
-}
-
-/* ── Shared ── */
-function SectionLabel({ children }) {
-  return (
-    <div style={{ fontFamily: "monospace", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: COLORS.accent, marginBottom: 20, display: "flex", alignItems: "center", gap: 12 }}>
-      <span style={{ display: "inline-block", width: 28, height: 1, background: COLORS.accent }} />
-      {children}
-    </div>
-  );
-}
-
-function CtaButton({ href, children }) {
-  const [hov, setHov] = useState(false);
-  return (
-    <a href={href} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
-      style={{ display: "inline-flex", alignItems: "center", gap: 10, background: hov ? COLORS.accent2 : COLORS.accent, color: COLORS.bg, fontFamily: "monospace", fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase", padding: "15px 26px", textDecoration: "none", fontWeight: 600, transform: hov ? "translateY(-2px)" : "none", transition: "all 0.2s" }}>
-      {children}
-    </a>
-  );
-}
-
-function Divider() {
-  return <div style={{ height: 1, background: COLORS.border, margin: "0 56px" }} />;
-}
-
-function Footer() {
-  return (
-    <footer style={{ borderTop: `1px solid ${COLORS.border}`, padding: "28px 56px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-      <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 17, letterSpacing: "0.1em", color: COLORS.muted }}>RIN LAYHEANG</div>
-      <div style={{ fontFamily: "monospace", fontSize: 11, color: COLORS.muted, letterSpacing: "0.1em" }}>REACT Website · Data Science  · Phnom Penh</div>
-    </footer>
+      <ul className="contact-list">
+        {contacts.map((c) => (
+          <li key={c.label}>
+            <a className="hud" href={c.href} target={c.href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer">
+              <span className="hud-label">{c.label}</span>
+              <span className="contact-value">{c.value}</span>
+              <ArrowUpRight />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
 /* ── Root ── */
 export default function Portfolio() {
-  const mouseRef = useMousePosition(); // ref, not state — no re-renders
-  const scrollY = useScrollY();
-  const [fullscreenData, setFullscreenData] = useState(null);
-
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (!fullscreenData) return;
-      if (e.key === 'Escape') setFullscreenData(null);
-      if (e.key === 'ArrowRight' && fullscreenData.index < fullscreenData.images.length - 1) {
-        setFullscreenData(prev => ({ ...prev, index: prev.index + 1 }));
-      }
-      if (e.key === 'ArrowLeft' && fullscreenData.index > 0) {
-        setFullscreenData(prev => ({ ...prev, index: prev.index - 1 }));
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [fullscreenData]);
-
+  const [lightbox, setLightbox] = useState(null);
   return (
-    <>
-      {fullscreenData && (
-        <div
-          className="interactive"
-          style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.95)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-          onClick={() => setFullscreenData(null)}
-        >
-          <button
-            onClick={(e) => { e.stopPropagation(); setFullscreenData(null); }}
-            style={{ position: 'absolute', top: 40, right: 40, background: 'none', border: 'none', color: COLORS.white, cursor: 'none', zIndex: 1001 }}
-          >
-            <span className="material-symbols-outlined interactive" style={{ fontSize: 36 }}>close</span>
-          </button>
-
-          {fullscreenData.index > 0 && (
-            <button
-              onClick={(e) => { e.stopPropagation(); setFullscreenData(prev => ({ ...prev, index: prev.index - 1 })); }}
-              style={{ position: 'absolute', left: 40, background: 'none', border: 'none', color: COLORS.white, cursor: 'none', zIndex: 1001 }}
-            >
-              <span className="material-symbols-outlined interactive" style={{ fontSize: 48 }}>chevron_left</span>
-            </button>
-          )}
-
-          {fullscreenData.index < fullscreenData.images.length - 1 && (
-            <button
-              onClick={(e) => { e.stopPropagation(); setFullscreenData(prev => ({ ...prev, index: prev.index + 1 })); }}
-              style={{ position: 'absolute', right: 40, background: 'none', border: 'none', color: COLORS.white, cursor: 'none', zIndex: 1001 }}
-            >
-              <span className="material-symbols-outlined interactive" style={{ fontSize: 48 }}>chevron_right</span>
-            </button>
-          )}
-
-          <img
-            src={fullscreenData.images[fullscreenData.index]}
-            style={{ maxWidth: '85%', maxHeight: '85%', objectFit: 'contain' }}
-            alt="Fullscreen"
-          />
+    <div className="portfolio">
+      <a href="#about" className="skip-link">Skip to content</a>
+      <Nav />
+      <main>
+        <Hero />
+        <div className="paper">
+          <About />
+          <Skills />
+          <Projects />
+          <Business onOpen={setLightbox} />
+          <Contact />
+          <footer className="footer tone tone-ink">
+            <span className="cond footer-name">Rin Layheang</span>
+            <span>Built with React and three.js in Phnom Penh</span>
+          </footer>
         </div>
-      )}
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@1,400;1,700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
-        *{box-sizing:border-box;margin:0;padding:0;}
-        html{scroll-behavior:smooth;}
-        body{background:${COLORS.bg};color:${COLORS.text};cursor:none;overflow-x:hidden;}
-        body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:1000;opacity:0.3;}
-        a{cursor:none;}
-        ::-webkit-scrollbar{width:4px;}
-        ::-webkit-scrollbar-track{background:${COLORS.bg};}
-        ::-webkit-scrollbar-thumb{background:${COLORS.border};}
-
-        @media (max-width: 1024px) {
-          .nav-links { gap: 20px !important; }
-          .hero-section { padding: 0 5% !important; }
-          .about-section, .contact-section { grid-template-columns: 1fr !important; gap: 40px !important; }
-          .skills-grid { grid-template-columns: repeat(2, 1fr) !important; }
-          .projects-grid { grid-template-columns: 1fr !important; }
-          .interactive[style*="display: grid"] { grid-template-columns: 1fr !important; }
-        }
-
-        @media (max-width: 768px) {
-          body { cursor: default !important; }
-          .cursor-el { display: none !important; }
-          .nav-container { padding: 16px 24px !important; }
-          .nav-links { display: none !important; }
-          .hero-content { flex-direction: column !important; text-align: center !important; }
-          .hero-text { flex: none !important; margin-bottom: 40px !important; }
-          .hero-image-container { flex: none !important; width: 80% !important; transform: translateY(0) !important; }
-          .hero-bottom { position: static !important; margin-top: 60px !important; padding: 0 !important; flex-direction: column !important; align-items: center !important; gap: 40px !important; }
-          .hero-desc { text-align: center !important; max-width: 100% !important; }
-          .section-padding { padding: 100px 24px !important; }
-          .skills-grid { grid-template-columns: 1fr !important; }
-          .about-section { padding: 100px 24px !important; }
-          .contact-section { padding: 0 24px 100px !important; }
-          
-          .business-card { padding: 32px 20px !important; gap: 24px !important; }
-          .business-header { flex-direction: column !important; align-items: center !important; text-align: center !important; gap: 16px !important; }
-          .business-name { font-size: 36px !important; }
-          .business-links { justify-content: center !important; flex-wrap: wrap !important; }
-          .business-desc { max-width: 100% !important; text-align: center !important; }
-          .business-services { align-items: center !important; }
-          .business-services > div { justify-content: center !important; }
-          .business-gallery-wrapper { margin: 0 -20px !important; }
-          .business-gallery { padding: 0 20px !important; gap: 16px !important; }
-          .business-gallery-item { flex: 0 0 240px !important; height: 320px !important; }
-        }
-      `}</style>
-      <Cursor mouseRef={mouseRef} />
-      <Nav scrollY={scrollY} />
-      <Hero />
-      <Marquee />
-      <About />
-      <Divider />
-      <Skills />
-      <Divider />
-      <Projects />
-      <Divider />
-      <Business setFullscreenImg={setFullscreenData} />
-      <Divider />
-      <Contact />
-      <Footer />
-    </>
+      </main>
+      {lightbox !== null && <Lightbox index={lightbox} setIndex={setLightbox} />}
+    </div>
   );
 }
