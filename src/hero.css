@@ -1,41 +1,87 @@
-/* ── Nav: centred floating glass pill ── */
+/* ── Nav: centred floating glass pill that splits into three pills once scrolled ── */
 .nav {
+  --glass: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.18));
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 rgba(255, 255, 255, 0.35), 0 12px 32px -14px rgba(40, 60, 110, 0.35);
   position: fixed;
   top: 16px;
   left: 50%;
   z-index: 100;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: stretch;
   max-width: calc(100% - 32px);
-  padding: 6px 6px 6px 20px;
   border-radius: 999px;
   color: var(--ink);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.18));
+  background: var(--glass);
   -webkit-backdrop-filter: blur(18px) saturate(170%);
   backdrop-filter: blur(18px) saturate(170%);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 rgba(255, 255, 255, 0.35), 0 12px 32px -14px rgba(40, 60, 110, 0.35);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  width: fit-content;
+  interpolate-size: allow-keywords; /* lets the width animate from fit-content where supported */
   transform: translateX(-50%);
-  transition: transform 0.45s var(--ease), background-color 0.3s, box-shadow 0.3s;
-}
-
-.nav.is-scrolled {
-  box-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 rgba(255, 255, 255, 0.35), 0 16px 40px -14px rgba(40, 60, 110, 0.45);
+  transition: transform 0.45s var(--ease), width 0.6s var(--ease), gap 0.6s var(--ease), background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
 }
 
 .nav.is-hidden {
-  transform: translate(-50%, calc(-100% - 24px));
+  transform: translate(-50%, calc(-100% - 64px)); /* far enough that the pills' shadow clears the top edge too */
+}
+
+/* each piece is a pill of its own; they only show their glass once the nav has split */
+.nav-brand, .nav > nav, .nav-end {
+  display: flex;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  transition: padding 0.6s var(--ease), background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.nav > nav, .nav-end {
+  padding: 5px;
+}
+
+.nav-end {
+  justify-content: flex-end;
+}
+
+/* once scrolled, the pill widens to the content edges and splits: name left, links centred, Contact right */
+.nav.is-scrolled {
+  width: calc(min(100%, var(--max)) - 2 * var(--gutter));
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.nav.is-scrolled .nav-brand, .nav.is-scrolled > nav, .nav.is-scrolled .nav-end {
+  background: var(--glass);
+  border-color: var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  -webkit-backdrop-filter: blur(18px) saturate(170%);
+  backdrop-filter: blur(18px) saturate(170%);
+}
+
+.nav.is-scrolled .nav-brand {
+  justify-self: start;
+  padding: 0 24px;
+}
+
+.nav.is-scrolled .nav-end {
+  justify-self: end;
 }
 
 .nav-brand {
+  padding: 0 8px 0 20px;
   font: 800 19px/1 var(--display);
   font-variation-settings: "wdth" 75, "opsz" 48;
   text-transform: uppercase;
   letter-spacing: 0.01em;
   text-decoration: none;
   white-space: nowrap;
-  margin-right: 12px;
 }
 
 .nav-links {
@@ -58,23 +104,47 @@
   background: rgba(11, 16, 38, 0.07);
 }
 
-.nav-links .nav-cta {
+.nav-cta {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-left: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  text-decoration: none;
+  white-space: nowrap;
+  font-size: 14px;
+  transition: background-color 0.2s;
   background: var(--ink);
   color: #fff;
   font-weight: 500;
 }
 
-.nav-links .nav-cta:hover {
+.nav-cta:hover {
   background: #222a4d;
 }
 
-.nav-links .nav-cta .icon {
+.nav-cta .icon {
   width: 14px;
   height: 14px;
+}
+
+.nav-menu-btn {
+  display: none;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin-left: 4px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.nav-menu-btn .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.nav-links-contact {
+  display: none;
 }
 
 /* ── Hero ── */
@@ -133,14 +203,30 @@
   animation-delay: 0.08s;
 }
 
+/* the same three facts render twice: stacked under the name on wide screens, and as a strip in
+   the bottom bar on phones. Each copy is hidden where the other one is used. */
 .hero-meta {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  animation: rise 0.9s 0.2s var(--ease) both;
+}
+
+.hero-meta-top {
   margin-top: 32px;
   display: grid;
   gap: 8px;
   font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  animation: rise 0.9s 0.2s var(--ease) both;
+}
+
+.hero-meta-bar {
+  display: none;
+  grid-column: 1 / -1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 28px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(11, 16, 38, 0.14);
+  font-size: 12px;
 }
 
 .hero-meta li {
@@ -498,8 +584,213 @@
   }
 }
 
+/* ── Phones: the header spans the screen and the menu opens full-screen ──
+   No transform on the header here, so the fixed sheet can cover the viewport; the brand and the
+   menu button carry the glass pill look on their own. */
 @media (max-width: 768px) {
-  .nav-links li:not(:last-child) {
+  .nav {
+    transform: none;
+    left: 50%;
+    margin-left: -50vw;
+    width: 100vw;
+    max-width: none;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    padding: 0 max(14px, env(safe-area-inset-left));
+    background: none;
+    border-color: transparent;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    transition: top 0.4s var(--ease);
+  }
+
+  .nav.is-scrolled {
+    width: 100vw;
+    grid-template-columns: 1fr auto;
+  }
+
+  .nav.is-hidden {
+    top: -70px;
+    transform: none;
+  }
+
+  .nav-brand,
+  .nav.is-scrolled .nav-brand,
+  .nav-menu-btn {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: 999px;
+    -webkit-backdrop-filter: blur(18px) saturate(170%);
+    backdrop-filter: blur(18px) saturate(170%);
+    padding: 10px 18px;
+  }
+
+  .nav-menu-btn {
+    display: grid;
+    padding: 0;
+  }
+
+  .nav.is-scrolled .nav-end {
+    background: none;
+    border-color: transparent;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    padding: 0;
+  }
+
+  /* the Contact pill is long on narrow screens; the sheet carries it instead */
+  .nav-end .nav-cta {
     display: none;
+  }
+
+  .nav-links-contact {
+    display: block;
+  }
+
+  /* the sheet itself */
+  .nav > nav {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    padding: 96px 24px calc(32px + env(safe-area-inset-bottom));
+    border: 0;
+    border-radius: 0;
+    background: #0b1026;
+    color: #eef3f4;
+    align-items: start;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s var(--ease);
+  }
+
+  .nav.is-open > nav {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .nav-links {
+    display: grid;
+    align-content: start;
+    width: 100%;
+    gap: 6px;
+    text-align: left;
+    font-family: var(--display);
+    font-weight: 800;
+    font-variation-settings: "wdth" 75, "opsz" 96;
+    text-transform: uppercase;
+    font-size: clamp(34px, 11vw, 48px);
+    line-height: 1;
+  }
+
+  .nav-links a {
+    padding: 10px 0;
+    border-radius: 0;
+  }
+
+  .nav-links a:hover,
+  .nav-links a:active {
+    background: none;
+    color: #ffd43b;
+  }
+
+  .nav-links-contact a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 18px;
+    padding: 16px 22px;
+    border-radius: 999px;
+    background: #ffd43b;
+    color: #0b1026;
+    font-size: clamp(20px, 6vw, 26px);
+  }
+
+  .nav-links-contact .icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* brand and close button stay above the sheet while it is open */
+  .nav.is-open .nav-brand,
+  .nav.is-open .nav-menu-btn {
+    position: relative;
+    z-index: 2;
+    color: #eef3f4;
+    background: none;
+    border-color: rgba(238, 243, 244, 0.35);
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* ── Phones: a shorter hero, so the page starts paying off sooner ── */
+@media (max-width: 768px) {
+  .hero {
+    padding: 88px 0 20px;
+  }
+
+  .hero-intro {
+    text-align: center;
+  }
+
+  .hero-meta-top {
+    display: none;
+  }
+
+  .hero-meta-bar {
+    display: flex;
+    gap: 6px 18px;
+    padding-bottom: 12px;
+    font-size: 11px;
+  }
+
+  /* one line on phones: the two words sit side by side and scale with the width */
+  .hero-name {
+    font-size: 8.5vw;
+    white-space: nowrap;
+  }
+
+  .hero-name span {
+    display: inline;
+  }
+
+  /* sized by width so the portrait keeps its aspect ratio: 946/883 of the height we want */
+  .hero-portrait {
+    width: min(100%, 420px, calc(42svh * 946 / 883));
+  }
+
+  .hero-stage {
+    margin-top: 4px;
+  }
+
+  .hero-panels {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding-top: 18px;
+  }
+
+  /* the wide "at a glance" panel keeps the full row to itself */
+  .hero-panels > :last-child {
+    grid-column: 1 / -1;
+  }
+
+  .hero-bar {
+    padding-top: 20px;
+    gap: 14px;
+  }
+}
+
+@media (max-width: 400px) {
+  .hero-portrait {
+    width: min(100%, calc(38svh * 946 / 883));
+  }
+
+  .hero-panels {
+    gap: 8px;
   }
 }

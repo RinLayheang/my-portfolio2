@@ -150,6 +150,81 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .project-desc { color: var(--ink-soft); font-size: 15px; margin-top: 8px; max-width: 36em; }
 
 /* Business */
+.ventures { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+.venture { display: flex; }
+
+/* startup card: product shot on top, pitch below, stack and CTA along the bottom */
+.paper .venture-card {
+  --c: var(--accent);
+  display: flex; flex-direction: column; width: 100%; padding: 0; overflow: hidden;
+  background: color-mix(in srgb, var(--paper) 90%, transparent);
+  transition: translate 0.4s var(--ease), background-size 0.35s var(--ease);
+}
+.venture:hover .venture-card { translate: 0 -4px; --b: 22px; }
+
+.venture-screen {
+  position: relative; padding: 18px 18px 0;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%);
+}
+
+/* browser frame around the product shot */
+.browser {
+  border: 1px solid var(--rule); border-bottom: 0; background: var(--paper);
+  border-radius: 10px 10px 0 0; overflow: hidden;
+  box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.6) inset, 0 18px 40px -26px rgba(11, 16, 38, 0.6);
+}
+.browser-bar { display: flex; align-items: center; gap: 6px; padding: 9px 12px; border-bottom: 1px solid var(--rule); background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.browser-bar .dot { width: 8px; height: 8px; border-radius: 50%; background: color-mix(in srgb, var(--ink) 22%, transparent); }
+.browser-url { margin-left: 10px; padding: 3px 12px; border-radius: 999px; background: color-mix(in srgb, var(--paper) 80%, transparent); font-size: 11px; letter-spacing: 0.04em; color: var(--ink-soft); }
+.browser img { width: 100%; aspect-ratio: 1200 / 630; object-fit: cover; object-position: top; }
+
+/* abstract dashboard used until a real screenshot exists */
+.mock { display: grid; grid-template-columns: 54px 1fr; gap: 10px; padding: 12px; aspect-ratio: 1200 / 630; background: color-mix(in srgb, var(--ink) 4%, transparent); }
+.mock-side { display: grid; align-content: start; gap: 7px; padding: 8px 6px; border-radius: 8px; background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.mock-logo { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: var(--accent); color: #fff; font: 800 12px/1 var(--display); font-variation-settings: "wdth" 75; margin-bottom: 4px; }
+.mock-side i { height: 6px; border-radius: 3px; background: color-mix(in srgb, var(--accent) 34%, transparent); }
+.mock-side i:nth-child(3) { width: 70%; }
+.mock-side i:nth-child(5) { width: 55%; }
+.mock-main { display: grid; align-content: start; gap: 10px; }
+.mock-row { display: flex; gap: 8px; }
+.mock-pill { width: 64px; height: 12px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 14%, transparent); }
+.mock-pill.wide { width: 40%; background: color-mix(in srgb, var(--accent) 30%, transparent); }
+.mock-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.mock-cards span { height: 34px; border-radius: 8px; background: color-mix(in srgb, var(--ink) 9%, transparent); border-top: 3px solid color-mix(in srgb, var(--accent) 45%, transparent); }
+.mock-chart { display: flex; align-items: end; gap: 6px; height: 64px; padding-top: 4px; }
+.mock-chart i { flex: 1; border-radius: 3px 3px 0 0; background: color-mix(in srgb, var(--accent) 55%, transparent); }
+
+.venture-status {
+  position: absolute; top: 28px; right: 28px; z-index: 2;
+  padding: 5px 12px; border-radius: 999px; background: var(--ink); color: var(--paper);
+  font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em;
+}
+
+.venture-body { display: flex; flex-direction: column; flex: 1; padding: 20px 22px 22px; }
+.venture-body h3 { font-size: clamp(28px, 3vw, 38px); margin: 8px 0 4px; }
+.venture-tagline { font-size: 17px; font-weight: 500; color: var(--accent); }
+.venture-desc { color: var(--ink-soft); font-size: 15px; margin-top: 10px; }
+.venture-features { display: grid; gap: 8px; margin-top: 16px; font-size: 14px; }
+.venture-features li { display: flex; align-items: start; gap: 10px; }
+.venture-features .icon { width: 16px; height: 16px; margin-top: 3px; color: var(--accent); }
+/* stack, then a divider, then the actions on a row of their own */
+.venture-foot { display: grid; gap: 16px; margin-top: auto; padding-top: 20px; }
+.venture-stack li { border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+.venture-soon { padding-top: 16px; border-top: 1px solid var(--rule); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); }
+.venture-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+/* the main action, filled in the product's colour so it reads as the thing to click */
+.venture-card .cut-btn { padding: 13px 22px; background: var(--accent); color: var(--paper); border-color: var(--accent); }
+.venture-card .cut-btn:hover { background: transparent; color: var(--accent); }
+.venture-card .cut-btn .icon { width: 15px; height: 15px; }
+.venture-detail { font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-soft); text-decoration: none; border-bottom: 1px solid var(--rule); padding-bottom: 2px; transition: color 0.2s, border-color 0.2s; }
+.venture-detail:hover { color: var(--accent); border-color: var(--accent); }
+
+/* a smaller heading for each group inside the section */
+.sub-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin: 40px 0 16px; padding-bottom: 12px; border-bottom: 1px solid var(--rule); }
+.sub-head h3 { font-size: clamp(26px, 3vw, 34px); }
+.sub-head .hud-label { order: -1; width: 100%; }
+.sub-sub { font-size: 13px; color: var(--ink-soft); }
+
 .paper .business { padding: clamp(22px, 3vw, 34px) 0; }
 .business-head { display: grid; grid-template-columns: auto 1fr auto; gap: 24px; align-items: start; padding: 0 clamp(20px, 3vw, 34px); }
 .business-logo { width: 80px; height: 80px; border-radius: 50%; border: 1px solid var(--rule); }
@@ -218,6 +293,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   .about, .contact { grid-template-columns: 1fr; }
   .business-head { grid-template-columns: auto 1fr; }
   .business-links { grid-column: 2; }
+  .ventures { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 768px) {
@@ -226,8 +302,74 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   .skills-grid, .projects-grid, .facts { grid-template-columns: 1fr; }
   .business-head { grid-template-columns: 1fr; }
   .business-links { grid-column: auto; }
+  .ventures { grid-template-columns: 1fr; }
   .paper .contact-list a { grid-template-columns: 1fr auto; gap: 2px 12px; }
   .contact-list .hud-label { grid-column: 1; }
   .contact-value { grid-column: 1; }
   .contact-list .icon { grid-column: 2; grid-row: 1 / span 2; }
+}
+
+/* ── Phones: a tighter rhythm, so less scrolling between sections ── */
+@media (max-width: 560px) {
+  .section { padding-top: clamp(56px, 14vw, 80px); }
+  .tone { padding-bottom: clamp(56px, 14vw, 80px); }
+  .sec-head { margin-bottom: 24px; }
+  .sec-title { font-size: clamp(44px, 14vw, 72px); }
+  .about-text p { font-size: 17px; }
+  .skill h3 { font-size: 30px; }
+  .projects-grid { gap: 36px 0; }
+  .project h3 { font-size: 28px; }
+  .business-head h3 { font-size: 36px; }
+  .gallery { gap: 14px; }
+  .gallery-item { flex-basis: 74vw; }
+  .contact-title { font-size: clamp(64px, 20vw, 110px); }
+  .contact-sub { font-size: 16px; }
+  .footer { flex-direction: column; align-items: start; gap: 8px; }
+}
+
+/* ── Scroll reveal (see useScrollReveal) ──
+   .reveal-ready on <html> arms it, .is-visible lands on each [data-reveal] element as it scrolls in
+   and --i staggers siblings. Elements rise by default; inside a data-reveal-style="scan" section a
+   teal scan line sweeps down and uncovers them instead. */
+.reveal-ready [data-reveal] {
+  --d: calc(var(--i, 0) * 90ms);
+  transition: opacity 0.9s var(--ease) var(--d), translate 0.9s var(--ease) var(--d), background-size 0.35s var(--ease);
+}
+
+/* rise: fade up */
+.reveal-ready [data-reveal]:not(.is-visible) { opacity: 0; translate: 0 36px; }
+
+/* scan: a paper-coloured cover slides down off the element, led by a teal line. The element itself
+   never hides, so the observer always sees it. */
+.reveal-ready [data-reveal-style="scan"] [data-reveal]:not([data-reveal="wipe"]) { position: relative; overflow: clip; }
+.reveal-ready [data-reveal-style="scan"] [data-reveal]:not(.is-visible) { opacity: 1; translate: none; }
+.reveal-ready [data-reveal-style="scan"] [data-reveal]:not([data-reveal="wipe"])::after {
+  content: ""; position: absolute; z-index: 3; left: 0; right: 0; top: -60px; height: calc(100% + 60px); pointer-events: none;
+  background: linear-gradient(180deg, transparent 0, color-mix(in srgb, var(--teal) 25%, transparent) 56px, var(--teal) 58px, var(--paper) 60px);
+  transition: translate 1.2s var(--ease) var(--d);
+}
+.reveal-ready [data-reveal-style="scan"] [data-reveal].is-visible::after { translate: 0 100%; }
+
+/* big display titles wipe up from their baseline; the clip sits on the title, not the observed
+   wrapper, because a fully clipped target never reports as intersecting */
+.reveal-ready [data-reveal="wipe"]:not(.is-visible) { opacity: 1; translate: none; }
+.reveal-ready [data-reveal="wipe"] > .cond { transition: translate 1.1s var(--ease), clip-path 1.1s var(--ease); }
+.reveal-ready [data-reveal="wipe"]:not(.is-visible) > .cond { translate: 0 0.35em; clip-path: inset(-20% -5% 100% -5%); }
+/* project images settle from a slight zoom as the card rises */
+.reveal-ready .project[data-reveal] img { transition: scale 1.4s var(--ease) var(--d), transform 0.7s var(--ease); }
+.reveal-ready .project[data-reveal]:not(.is-visible) img { scale: 1.12; }
+/* skill bars wait for their panel to arrive */
+.reveal-ready .skill[data-reveal]:not(.is-visible) .bars i { animation-play-state: paused; }
+
+/* thin progress bar tied to page scroll (compositor-only, where supported) */
+.scroll-progress { display: none; }
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .scroll-progress {
+      display: block; position: fixed; inset: 0 0 auto; height: 3px; z-index: 250; pointer-events: none;
+      background: var(--yellow); transform-origin: left;
+      animation: scroll-progress linear both; animation-timeline: scroll(root);
+    }
+    @keyframes scroll-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  }
 }

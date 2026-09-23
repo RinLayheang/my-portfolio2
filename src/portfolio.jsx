@@ -90,6 +90,44 @@ const business = {
   ],
 };
 
+// Two SaaS ventures beside Be Badminton. DRAFT COPY: pitch, features, stack and links are guesses —
+// replace them. Add `img` (see the img() helper) and the mockup shows a real screenshot instead.
+const ventures = [
+  {
+    key: "findmoy",
+    name: "FindMoy",
+    product: "KCMS",
+    tagline: "Khmer-first AI comment moderation",
+    status: "Early access",
+    domain: "findmoy.app",
+    desc: "KCMS reads Facebook Page comments in Khmer, Khmerlish and English, then flags scams, abuse and spam in context. A person on the team confirms every action, and every hide is reversible with a full audit trail.",
+    features: [
+      "Reads Khmer, Khmerlish and English in context",
+      "Flags safe, offensive or harmful, with the reason",
+      "Human review, reversible, with an audit trail",
+    ],
+    stack: ["Facebook Pages", "AI moderation", "Dashboard"],
+    accent: "#0a7a8c",
+    url: "https://findmoy.app",
+    detail: { label: "How it works", url: "https://findmoy.app/#how" },
+    // img: img("findmoy", [640, 1200]),
+  },
+  {
+    key: "passkru",
+    name: "PassKru",
+    product: "",
+    tagline: "Tutoring that fits the exam",
+    status: "In development",
+    domain: "passkru.com",
+    desc: "A tutoring platform that matches students with verified teachers, handles scheduling and payment, and tracks progress through to exam day.",
+    features: ["Matching by subject and level", "Scheduling, payments and reminders", "Progress tracking for students"],
+    stack: ["React", "Node.js", "PostgreSQL"],
+    accent: "#8a5cf6",
+    url: "",
+    // img: img("passkru", [640, 1200]),
+  },
+];
+
 const contacts = [
   { label: "Email", value: "layheangrin@gmail.com", href: "mailto:layheangrin@gmail.com" },
   { label: "GitHub", value: "github.com/RinLayheang", href: "https://github.com/RinLayheang" },
@@ -100,6 +138,30 @@ const contacts = [
 const prefersReducedMotion = () =>
   typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+// Elements marked data-reveal animate in once as they scroll into view; --i staggers siblings.
+// Content is only hidden once .reveal-ready is on <html>, so it stays visible without JS or motion.
+function useScrollReveal() {
+  useEffect(() => {
+    if (prefersReducedMotion() || !("IntersectionObserver" in window)) return;
+    const root = document.documentElement;
+    root.classList.add("reveal-ready");
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        e.target.classList.add("is-visible");
+        io.unobserve(e.target);
+      });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.12 });
+    document.querySelectorAll("[data-reveal]:not(.is-visible)").forEach((el) => io.observe(el));
+    return () => {
+      io.disconnect();
+      root.classList.remove("reveal-ready");
+    };
+  }, []);
+}
+
+const stagger = (i) => ({ "--i": i });
+
 /* ── Icons (inline SVG instead of a multi-megabyte icon font) ── */
 const ArrowUpRight = () => (
   <svg className="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
@@ -107,39 +169,84 @@ const ArrowUpRight = () => (
 const Chevron = ({ dir }) => (
   <svg className="icon" viewBox="0 0 24 24" aria-hidden="true"><path d={dir === "left" ? "m15 5-7 7 7 7" : "m9 5 7 7-7 7"} /></svg>
 );
+const Menu = ({ open }) => (
+  <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
+    {open ? <path d="M6 6l12 12M18 6 6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+  </svg>
+);
 const Close = () => (
   <svg className="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
 );
 
 /* ── Nav ── */
+const NAV_LINKS = [
+  { href: "#about", label: "About" },
+  { href: "#skills", label: "Skills" },
+  { href: "#projects", label: "Projects" },
+  { href: "#business", label: "Business" },
+];
+
 function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
+  // on phones the section links live behind a menu button
+  const [open, setOpen] = useState(false);
   useEffect(() => {
     let last = window.scrollY;
     const onScroll = () => {
       const y = window.scrollY;
       // setState with an unchanged boolean bails out, so this only renders on threshold changes
       setScrolled(y > 40);
-      setHidden(y > 120 && y > last);
+      // hide while scrolling down, show again as soon as the visitor scrolls up
+      if (Math.abs(y - last) > 4) {
+        const away = y > 120 && y > last;
+        setHidden(away);
+        if (away) setOpen(false); // the menu goes with the bar
+      }
       last = y;
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // close the menu on Escape, on a tap outside it, or once the bar slides away
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => e.key === "Escape" && setOpen(false);
+    const onPointer = (e) => !e.target.closest(".nav") && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("pointerdown", onPointer);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("pointerdown", onPointer);
+    };
+  }, [open]);
   return (
-    <header className={`nav${scrolled ? " is-scrolled" : ""}${hidden ? " is-hidden" : ""}`}>
+    <header className={`nav${scrolled ? " is-scrolled" : ""}${hidden ? " is-hidden" : ""}${open ? " is-open" : ""}`}>
       <a href="#top" className="nav-brand">Rin Layheang</a>
       <nav aria-label="Sections">
         <ul className="nav-links">
-          <li><a href="#about">About</a></li>
-          <li><a href="#skills">Skills</a></li>
-          <li><a href="#projects">Projects</a></li>
-          <li><a href="#business">Business</a></li>
-          <li><a href="#contact" className="nav-cta">Contact <ArrowUpRight /></a></li>
+          {NAV_LINKS.map((l) => (
+            <li key={l.href}><a href={l.href} onClick={() => setOpen(false)}>{l.label}</a></li>
+          ))}
+          <li className="nav-links-contact">
+            <a href="#contact" onClick={() => setOpen(false)}>Contact <ArrowUpRight /></a>
+          </li>
         </ul>
       </nav>
+      <div className="nav-end">
+        <a href="#contact" className="nav-cta" onClick={() => setOpen(false)}>Contact <ArrowUpRight /></a>
+        <button
+          type="button"
+          className="nav-menu-btn"
+          aria-expanded={open}
+          aria-label={open ? "Close menu" : "Open menu"}
+          onClick={() => setOpen((v) => !v)}
+        >
+          <Menu open={open} />
+        </button>
+      </div>
     </header>
   );
 }
@@ -182,6 +289,15 @@ const heroSrc = (name) => ({
   srcSet: `/img/${name}-600.webp 600w, /img/${name}-933.webp 933w, /img/${name}-1866.webp 1866w`,
 });
 const HERO_SIZES = "(max-width: 1024px) 100vw, 90vh";
+
+// under the name on wide screens, down in the bottom bar on phones
+const HeroMeta = ({ where }) => (
+  <ul className={`hero-meta hero-meta-${where}`}>
+    <li><Icon d={ICONS.pin} />Phnom Penh, Cambodia</li>
+    <li><Icon d={ICONS.cap} />Data Science, year 2 at CADT</li>
+    <li><Icon d={ICONS.code} />Data, full-stack and UI/UX</li>
+  </ul>
+);
 
 function Hero() {
   const canvasRef = useRef(null);
@@ -249,11 +365,7 @@ function Hero() {
 
       <div className="hero-intro">
         <h1 className="hero-name"><span>Rin</span> <span>Layheang</span></h1>
-        <ul className="hero-meta">
-          <li><Icon d={ICONS.pin} />Phnom Penh, Cambodia</li>
-          <li><Icon d={ICONS.cap} />Data Science, year 2 at CADT</li>
-          <li><Icon d={ICONS.code} />Data, full-stack and UI/UX</li>
-        </ul>
+        <HeroMeta where="top" />
       </div>
 
       <div className="hero-stage">
@@ -304,6 +416,7 @@ function Hero() {
       </aside>
 
       <div className="hero-bar">
+        <HeroMeta where="bar" />
         <button type="button" className="hero-switch" onClick={switchLayer} aria-pressed={layer === "alt"}>
           <span className="switch-icon" aria-hidden="true">
             <svg className="icon" viewBox="0 0 24 24"><path d="M4 8h13m0 0-3.5-3.5M17 8l-3.5 3.5M20 16H7m0 0 3.5-3.5M7 16l3.5 3.5" /></svg>
@@ -335,9 +448,9 @@ function Contours() {
 
 function SectionHead({ title, label, sub }) {
   return (
-    <div className="sec-head">
+    <div className="sec-head" data-reveal="wipe">
       <h2 className="cond sec-title">{title}</h2>
-      <div className="sec-meta">
+      <div className="sec-meta" data-reveal style={stagger(1)}>
         <p className="hud-label">{label}</p>
         {sub && <p className="sec-sub">{sub}</p>}
       </div>
@@ -353,18 +466,18 @@ function About() {
       <SectionHead title="About" label="Who I am" sub="Phnom Penh, Cambodia" />
       <div className="about">
         <div className="about-text">
-          <p>
+          <p data-reveal>
             I'm a second-year Data Science student at the Cambodia Academy of Digital Technology (CADT). I'm interested in where data, design and technology meet.
           </p>
-          <p>
+          <p data-reveal style={stagger(1)}>
             Good interfaces tell stories, and so does good data. My work joins analytical thinking with visual communication.
           </p>
         </div>
         <dl className="facts">
-          <div className="hud"><dt className="hud-label">Studying</dt><dd>Data Science, year 2, CADT</dd></div>
-          <div className="hud"><dt className="hud-label">Based in</dt><dd>Phnom Penh, Cambodia</dd></div>
-          <div className="hud"><dt className="hud-label">Works across</dt><dd>Data, code and design</dd></div>
-          <div className="hud"><dt className="hud-label">Runs</dt><dd>Be Badminton, a gear shop</dd></div>
+          <div className="hud" data-reveal style={stagger(1)}><dt className="hud-label">Studying</dt><dd>Data Science, year 2, CADT</dd></div>
+          <div className="hud" data-reveal style={stagger(2)}><dt className="hud-label">Based in</dt><dd>Phnom Penh, Cambodia</dd></div>
+          <div className="hud" data-reveal style={stagger(3)}><dt className="hud-label">Works across</dt><dd>Data, code and design</dd></div>
+          <div className="hud" data-reveal style={stagger(4)}><dt className="hud-label">Runs</dt><dd>Be Badminton, a gear shop</dd></div>
         </dl>
       </div>
     </section>
@@ -378,12 +491,12 @@ const skillShort = { data: "Data", build: "Build", design: "Design" };
 
 function Skills() {
   return (
-    <section id="skills" className="section">
+    <section id="skills" className="section" data-reveal-style="scan">
       <Contours />
       <SectionHead title="Skills" label="What I work with" sub={`${disciplines.length} areas`} />
       <div className="skills-grid">
-        {disciplines.map((d) => (
-          <article key={d.key} className="hud skill">
+        {disciplines.map((d, i) => (
+          <article key={d.key} className="hud skill" data-reveal style={stagger(i)}>
             <p className="hud-label">{skillShort[d.key]}</p>
             <h3 className="cond">{d.title}</h3>
             <p className="skill-desc">{d.desc}</p>
@@ -401,9 +514,9 @@ function Skills() {
 }
 
 /* ── Projects ── */
-function ProjectCard({ p }) {
+function ProjectCard({ p, i }) {
   return (
-    <li className="project">
+    <li className="project" data-reveal style={stagger(i % 2)}>
       <div className="project-media burn">
         <img
           src={p.img.src}
@@ -434,47 +547,150 @@ function Projects() {
       <Contours />
       <SectionHead title="Projects" label="Selected work" sub={`${years[0]} – ${years[years.length - 1]}`} />
       <ul className="projects-grid">
-        {projects.map((p) => <ProjectCard key={p.name} p={p} />)}
+        {projects.map((p, i) => <ProjectCard key={p.name} p={p} i={i} />)}
       </ul>
     </section>
   );
 }
 
 /* ── Business ── */
-function Business({ onOpen }) {
+const Tick = () => (
+  <svg className="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 13 4 4 10-10" /></svg>
+);
+
+// stand-in for a screenshot: an abstract dashboard in the venture's accent colour
+const AppMock = ({ name }) => (
+  <div className="mock" aria-hidden="true">
+    <div className="mock-side">
+      <span className="mock-logo">{name[0]}</span>
+      <i /><i /><i /><i />
+    </div>
+    <div className="mock-main">
+      <div className="mock-row">
+        <span className="mock-pill" /><span className="mock-pill wide" />
+      </div>
+      <div className="mock-cards">
+        <span /><span /><span />
+      </div>
+      <div className="mock-chart">
+        {[46, 68, 38, 82, 58, 94, 72].map((h, i) => <i key={i} style={{ height: `${h}%` }} />)}
+      </div>
+    </div>
+  </div>
+);
+/* The section runs software first, then the shop under its own sub-heading, so a SaaS product and
+   a badminton shop never sit side by side. */
+function SubHead({ label, title, sub }) {
   return (
-    <section id="business" className="section">
-      <Contours />
-      <SectionHead title="Business" label="My own start-up" />
-      <div className="hud business">
-        <div className="business-head">
-          <img src={business.logo} width="80" height="80" alt="" className="business-logo" loading="lazy" />
-          <div>
-            <p className="hud-label">Founder</p>
-            <h3 className="cond">{business.name}</h3>
-            <p className="business-desc">{business.desc}</p>
-            <ul className="tags">
-              {business.services.map((s) => <li key={s}>{s}</li>)}
-            </ul>
+    <div className="sub-head" data-reveal>
+      <p className="hud-label">{label}</p>
+      <h3 className="cond">{title}</h3>
+      {sub && <p className="sub-sub">{sub}</p>}
+    </div>
+  );
+}
+
+function VentureCard({ v, i }) {
+  return (
+    <li className="venture" data-reveal style={{ ...stagger(i), "--accent": v.accent }}>
+      <article className="hud venture-card">
+        <div className="venture-screen">
+          {/* a browser frame: the product's own screenshot once there is one */}
+          <div className="browser">
+            <div className="browser-bar" aria-hidden="true">
+              <span className="dot" /><span className="dot" /><span className="dot" />
+              <span className="browser-url">{v.domain}</span>
+            </div>
+            {v.img ? (
+              <img src={v.img.src} srcSet={v.img.srcSet} sizes="(max-width: 900px) 92vw, 46vw" width="1200" height="630" alt={`${v.name} interface`} loading="lazy" decoding="async" />
+            ) : (
+              <AppMock name={v.name} />
+            )}
           </div>
-          <ul className="business-links">
-            {business.links.map((l) => (
-              <li key={l.label}>
-                <a href={l.url} target="_blank" rel="noopener noreferrer" className="cut-btn">{l.label} <ArrowUpRight /></a>
-              </li>
+          <span className="venture-status">{v.status}</span>
+        </div>
+
+        <div className="venture-body">
+          <p className="hud-label">Founder · SaaS{v.product && ` · ${v.product}`}</p>
+          <h3 className="cond">{v.name}</h3>
+          <p className="venture-tagline">{v.tagline}</p>
+          <p className="venture-desc">{v.desc}</p>
+          <ul className="venture-features">
+            {v.features.map((f) => (
+              <li key={f}><Tick />{f}</li>
             ))}
           </ul>
+          <div className="venture-foot">
+            <ul className="tags venture-stack">
+              {v.stack.map((t) => <li key={t}>{t}</li>)}
+            </ul>
+            {v.url ? (
+              <div className="venture-actions">
+                {v.detail && (
+                  <a href={v.detail.url} target="_blank" rel="noopener noreferrer" className="venture-detail">{v.detail.label}</a>
+                )}
+                <a href={v.url} target="_blank" rel="noopener noreferrer" className="cut-btn">Visit site <ArrowUpRight /></a>
+              </div>
+            ) : (
+              <span className="venture-soon">Launching soon</span>
+            )}
+          </div>
         </div>
-        <ul className="gallery" aria-label="Be Badminton posters">
-          {business.gallery.map((g, i) => (
-            <li key={g.src} className="gallery-item">
-              <button type="button" className="burn" onClick={() => onOpen(i)} aria-label={`Open poster ${i + 1} of ${business.gallery.length}`}>
-                <img src={g.srcSet.split(" ")[0]} srcSet={g.srcSet} sizes="320px" width={g.w} height={g.h} alt="" loading="lazy" decoding="async" />
-              </button>
+      </article>
+    </li>
+  );
+}
+
+const Ventures = () => (
+  <ul className="ventures">
+    {ventures.map((v, i) => <VentureCard key={v.key} v={v} i={i} />)}
+  </ul>
+);
+
+// the shop as it is now: wide panel with the poster slider
+function ShopPanel({ onOpen }) {
+  return (
+    <div className="hud business" data-reveal>
+      <div className="business-head">
+        <img src={business.logo} width="80" height="80" alt="" className="business-logo" loading="lazy" />
+        <div>
+          <p className="hud-label">Founder · Retail</p>
+          <h3 className="cond">{business.name}</h3>
+          <p className="business-desc">{business.desc}</p>
+          <ul className="tags">
+            {business.services.map((s) => <li key={s}>{s}</li>)}
+          </ul>
+        </div>
+        <ul className="business-links">
+          {business.links.map((l) => (
+            <li key={l.label}>
+              <a href={l.url} target="_blank" rel="noopener noreferrer" className="cut-btn">{l.label} <ArrowUpRight /></a>
             </li>
           ))}
         </ul>
       </div>
+      <ul className="gallery" aria-label="Be Badminton posters">
+        {business.gallery.map((g, i) => (
+          <li key={g.src} className="gallery-item">
+            <button type="button" className="burn" onClick={() => onOpen(i)} aria-label={`Open poster ${i + 1} of ${business.gallery.length}`}>
+              <img src={g.srcSet.split(" ")[0]} srcSet={g.srcSet} sizes="320px" width={g.w} height={g.h} alt="" loading="lazy" decoding="async" />
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function Business({ onOpen }) {
+  return (
+    <section id="business" className="section" data-reveal-style="scan">
+      <Contours />
+      <SectionHead title="Business" label="What I'm building" sub={`${ventures.length + 1} ventures`} />
+      <SubHead label="Software" title="SaaS products" sub="Built and run by me" />
+      <Ventures />
+      <SubHead label="Retail" title="On the ground" sub="A shop, not an app" />
+      <ShopPanel onOpen={onOpen} />
     </section>
   );
 }
@@ -520,15 +736,15 @@ function Lightbox({ index, setIndex }) {
 /* ── Contact ── */
 function Contact() {
   return (
-    <section id="contact" className="section contact tone tone-ink">
+    <section id="contact" className="section contact tone tone-ink" data-reveal-style="scan">
       <Contours />
-      <div>
+      <div data-reveal="wipe">
         <h2 className="cond contact-title">Let's<br />work.</h2>
-        <p className="contact-sub">I'm open to projects, collaborations and internships.</p>
+        <p className="contact-sub" data-reveal style={stagger(1)}>I'm open to projects, collaborations and internships.</p>
       </div>
       <ul className="contact-list">
-        {contacts.map((c) => (
-          <li key={c.label}>
+        {contacts.map((c, i) => (
+          <li key={c.label} data-reveal style={stagger(i)}>
             <a className="hud" href={c.href} target={c.href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer">
               <span className="hud-label">{c.label}</span>
               <span className="contact-value">{c.value}</span>
@@ -544,8 +760,10 @@ function Contact() {
 /* ── Root ── */
 export default function Portfolio() {
   const [lightbox, setLightbox] = useState(null);
+  useScrollReveal();
   return (
     <div className="portfolio">
+      <div className="scroll-progress" aria-hidden="true" />
       <a href="#about" className="skip-link">Skip to content</a>
       <Nav />
       <main>
