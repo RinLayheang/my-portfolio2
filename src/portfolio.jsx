@@ -33,17 +33,25 @@ const img = (name, sizes) => ({
 
 const projects = [
   {
-    name: "Dino Game",
-    desc: "An endless runner built in Scratch with classic arcade mechanics and difficulty that ramps up as you play.",
-    type: "Scratch", year: "2025", kind: "build",
-    img: img("dino", [640, 1200]), imgAlt: "Dino Game title screen",
-    path: "/project/dinogame",
+    name: "Dino Run 3D",
+    desc: "A fully 3D reimagining of the classic endless runner game. Jump, duck, and dodge obstacles as you speed through the desert.",
+    type: "Three.js", year: "2026", kind: "build",
+    img: img("dino3d", [640, 1200]), imgAlt: "Dino Run 3D game interface",
+    url: "https://dino3d.rinlayheang.me/",
   },
   {
-    name: "Gas Management System",
-    desc: "A terminal-based admin tool written in C for a first-year project, with role-based menus for running a gas station.",
-    type: "C", year: "2025", kind: "build",
-    img: img("gas", [640, 1200]), imgAlt: "Gas Management System terminal interface",
+    name: "KonMus",
+    desc: "A modern Data Science & AI Academy platform featuring lessons, code, models, and interactive quizzes in Khmer and English.",
+    type: "Web App", year: "2026", kind: "build",
+    img: img("konmus", [640, 1200]), imgAlt: "KonMus Data Science & AI Academy interface",
+    url: "https://kon-mus.vercel.app/",
+  },
+  {
+    name: "PassKru Arcade",
+    desc: "A gamified educational platform to play games, answer questions, and win prizes while learning.",
+    type: "Web App", year: "2026", kind: "build",
+    img: img("passkru_arcade", [640, 1200]), imgAlt: "PassKru Arcade game interface",
+    url: "https://passkru.game.rinlayheang.me/",
   },
   {
     name: "Weather Analyzer",
@@ -70,6 +78,19 @@ const projects = [
     desc: "An Arduino UNO robot with line following, obstacle detection and Bluetooth or joystick control, programmed in C++.",
     type: "Arduino", year: "2026", kind: "build",
     img: img("robot", [640, 1200]), imgAlt: "4WD robot car",
+  },
+  {
+    name: "Dino Game",
+    desc: "An endless runner built in Scratch with classic arcade mechanics and difficulty that ramps up as you play.",
+    type: "Scratch", year: "2025", kind: "build",
+    img: img("dino", [640, 1200]), imgAlt: "Dino Game title screen",
+    path: "/project/dinogame",
+  },
+  {
+    name: "Gas Management System",
+    desc: "A terminal-based admin tool written in C for a first-year project, with role-based menus for running a gas station.",
+    type: "C", year: "2025", kind: "build",
+    img: img("gas", [640, 1200]), imgAlt: "Gas Management System terminal interface",
   },
 ];
 
@@ -110,21 +131,22 @@ const ventures = [
     accent: "#0a7a8c",
     url: "https://findmoy.app",
     detail: { label: "How it works", url: "https://findmoy.app/#how" },
-    // img: img("findmoy", [640, 1200]),
+    img: { src: "/img/findmoy-live.png", srcSet: "/img/findmoy-live.png" },
   },
   {
     key: "passkru",
     name: "PassKru",
     product: "",
-    tagline: "Tutoring that fits the exam",
+    tagline: "Ace your teacher-exam preparation",
     status: "In development",
     domain: "passkru.com",
-    desc: "A tutoring platform that matches students with verified teachers, handles scheduling and payment, and tracks progress through to exam day.",
-    features: ["Matching by subject and level", "Scheduling, payments and reminders", "Progress tracking for students"],
+    desc: "A learning platform designed to help teacher-exam candidates prepare effectively with personalized study plans based on each learner's needs.",
+    features: ["Practice questions & quizzes", "Flashcards & mock exams", "Personalized study plans"],
     stack: ["React", "Node.js", "PostgreSQL"],
     accent: "#8a5cf6",
-    url: "",
-    // img: img("passkru", [640, 1200]),
+    url: "https://pass-kru67.vercel.app/",
+    detail: { label: "Startup Details", url: "/project/passkru_startup" },
+    img: { src: "/img/passkru-live.png", srcSet: "/img/passkru-live.png" }
   },
 ];
 
@@ -181,6 +203,7 @@ const Close = () => (
 /* ── Nav ── */
 const NAV_LINKS = [
   { href: "#about", label: "About" },
+  { href: "#achievements", label: "Achievements" },
   { href: "#skills", label: "Skills" },
   { href: "#projects", label: "Projects" },
   { href: "#business", label: "Business" },
@@ -426,12 +449,9 @@ function Hero() {
             <span className="hero-switch-sub">Switch portrait</span>
           </span>
         </button>
-        <a href="#projects" className="hero-cta">View projects <ArrowUpRight /></a>
-        <ul className="hero-social">
-          <li><a href="https://github.com/RinLayheang" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-          <li><a href="https://www.linkedin.com/in/rin-layheang-7aab5a334" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
-          <li><a href="https://www.facebook.com/rinn.layheang.2025" target="_blank" rel="noopener noreferrer">Facebook</a></li>
-        </ul>
+        <div style={{ gridColumn: 3, justifySelf: 'end' }}>
+          <a href="#projects" className="hero-cta">View projects <ArrowUpRight /></a>
+        </div>
       </div>
     </section>
   );
@@ -479,6 +499,95 @@ function About() {
           <div className="hud" data-reveal style={stagger(3)}><dt className="hud-label">Works across</dt><dd>Data, code and design</dd></div>
           <div className="hud" data-reveal style={stagger(4)}><dt className="hud-label">Runs</dt><dd>Be Badminton, a gear shop</dd></div>
         </dl>
+      </div>
+    </section>
+  );
+}
+
+/* ── Achievements ── */
+export const ACHIEVEMENTS = [
+  {
+    key: "passkru",
+    title: "1st Place - NGEP",
+    desc: "Our team PassKru won 1st Place in the Next-Gen Engagement Program (NGEP) Batch 3! We competed against talented teams, pitching our MVP and business plan. This achievement validates our mission to revolutionize exam preparation through personalized study plans and interactive learning tools.",
+    link: "/project/passkru_ngep",
+    images: [
+      "/img/passkru-ngep-1-1080.webp",
+      "/img/passkru-ngep-2-1080.webp",
+      "/img/passkru-ngep-3-1080.webp"
+    ]
+  }
+];
+
+function ImageCarousel({ images, altText }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (!images || images.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [images]);
+
+  if (!images || images.length === 0) return null;
+
+  return (
+    <div style={{ position: 'relative', width: '100%', aspectRatio: '4/3', overflow: 'hidden', borderRadius: '8px' }}>
+      {images.map((src, index) => (
+        <img
+          key={src}
+          src={src}
+          alt={`${altText} ${index + 1}`}
+          loading="lazy"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            opacity: index === currentIndex ? 1 : 0,
+            transform: index === currentIndex ? 'scale(1.05)' : 'scale(1)',
+            transition: index === currentIndex 
+              ? 'opacity 1s ease-in-out, transform 4s ease-out' 
+              : 'opacity 1s ease-in-out, transform 0s',
+            borderRadius: '8px'
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function Achievements() {
+  return (
+    <section id="achievements" className="section">
+      <Contours />
+      <SectionHead title="Achievements" label="Competitions" sub="Hackathons & Awards" />
+      <div className="about" style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+        {ACHIEVEMENTS.map((ach) => (
+          <div key={ach.key} className="hud" style={{ padding: '32px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px', alignItems: 'center' }} data-reveal>
+            <div className="achievement-image">
+              <ImageCarousel images={ach.images} altText={ach.title} />
+            </div>
+            <div className="achievement-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+              <p className="hud-label" style={{ color: 'var(--teal)', marginBottom: '12px' }}>Competition Winner</p>
+              <h3 className="cond" style={{ fontSize: '2.5rem', marginBottom: '16px' }}>🏆 {ach.title}</h3>
+              <p style={{ marginBottom: '24px', opacity: 0.8, lineHeight: 1.6, fontSize: '1.1rem' }}>{ach.desc}</p>
+              
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '32px' }}>
+                <span style={{ fontSize: '11px', padding: '6px 12px', border: '1px solid var(--ink)', opacity: 0.7, borderRadius: '100px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Ed-Tech</span>
+                <span style={{ fontSize: '11px', padding: '6px 12px', border: '1px solid var(--ink)', opacity: 0.7, borderRadius: '100px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>SaaS</span>
+                <span style={{ fontSize: '11px', padding: '6px 12px', border: '1px solid var(--ink)', opacity: 0.7, borderRadius: '100px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>2026</span>
+              </div>
+
+              <Link to={ach.link} className="cut-btn" style={{ display: 'inline-flex' }}>
+                View project details <ArrowUpRight />
+              </Link>
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );
@@ -533,7 +642,8 @@ function ProjectCard({ p, i }) {
           <p className="hud-label">{p.type} · {p.year}</p>
           <h3 className="cond">{p.name}</h3>
         </div>
-        {p.path && <Link to={p.path} className="cut-btn">View <ArrowUpRight /></Link>}
+        {p.path && <Link to={p.path} className="cut-btn project-btn">View <ArrowUpRight /></Link>}
+        {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer" className="cut-btn project-btn">Visit <ArrowUpRight /></a>}
       </div>
       <p className="project-desc">{p.desc}</p>
     </li>
@@ -545,7 +655,7 @@ function Projects() {
   return (
     <section id="projects" className="section">
       <Contours />
-      <SectionHead title="Projects" label="Selected work" sub={`${years[0]} – ${years[years.length - 1]}`} />
+      <SectionHead title="Projects" />
       <ul className="projects-grid">
         {projects.map((p, i) => <ProjectCard key={p.name} p={p} i={i} />)}
       </ul>
@@ -593,24 +703,23 @@ function SubHead({ label, title, sub }) {
 function VentureCard({ v, i }) {
   return (
     <li className="venture" data-reveal style={{ ...stagger(i), "--accent": v.accent }}>
-      <article className="hud venture-card">
-        <div className="venture-screen">
-          {/* a browser frame: the product's own screenshot once there is one */}
-          <div className="browser">
-            <div className="browser-bar" aria-hidden="true">
-              <span className="dot" /><span className="dot" /><span className="dot" />
-              <span className="browser-url">{v.domain}</span>
-            </div>
-            {v.img ? (
-              <img src={v.img.src} srcSet={v.img.srcSet} sizes="(max-width: 900px) 92vw, 46vw" width="1200" height="630" alt={`${v.name} interface`} loading="lazy" decoding="async" />
-            ) : (
+      <article className={`hud venture-card ${i % 2 !== 0 ? 'venture-card-reverse' : ''}`} style={{ padding: 0, overflow: 'hidden', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', alignItems: 'stretch' }}>
+        <div className="venture-screen" style={v.img ? { padding: 0, backgroundColor: 'transparent', display: 'flex', position: 'relative' } : { display: 'flex', position: 'relative' }}>
+          {v.img ? (
+            <img src={v.img.src} srcSet={v.img.srcSet} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} alt={`${v.name} interface`} loading="lazy" decoding="async" />
+          ) : (
+            <div className="browser" style={{ margin: 'auto' }}>
+              <div className="browser-bar" aria-hidden="true">
+                <span className="dot" /><span className="dot" /><span className="dot" />
+                <span className="browser-url">{v.domain}</span>
+              </div>
               <AppMock name={v.name} />
-            )}
-          </div>
-          <span className="venture-status">{v.status}</span>
+            </div>
+          )}
+          <span className="venture-status" style={{ position: 'absolute', top: '16px', left: '16px', right: 'auto' }}>{v.status}</span>
         </div>
 
-        <div className="venture-body">
+        <div className="venture-body" style={{ padding: '40px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           <p className="hud-label">Founder · SaaS{v.product && ` · ${v.product}`}</p>
           <h3 className="cond">{v.name}</h3>
           <p className="venture-tagline">{v.tagline}</p>
@@ -627,7 +736,11 @@ function VentureCard({ v, i }) {
             {v.url ? (
               <div className="venture-actions">
                 {v.detail && (
-                  <a href={v.detail.url} target="_blank" rel="noopener noreferrer" className="venture-detail">{v.detail.label}</a>
+                  v.detail.url.startsWith("/") ? (
+                    <Link to={v.detail.url} className="venture-detail">{v.detail.label}</Link>
+                  ) : (
+                    <a href={v.detail.url} target="_blank" rel="noopener noreferrer" className="venture-detail">{v.detail.label}</a>
+                  )
                 )}
                 <a href={v.url} target="_blank" rel="noopener noreferrer" className="cut-btn">Visit site <ArrowUpRight /></a>
               </div>
@@ -642,7 +755,7 @@ function VentureCard({ v, i }) {
 }
 
 const Ventures = () => (
-  <ul className="ventures">
+  <ul className="ventures" style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
     {ventures.map((v, i) => <VentureCard key={v.key} v={v} i={i} />)}
   </ul>
 );
@@ -770,6 +883,7 @@ export default function Portfolio() {
         <Hero />
         <div className="paper">
           <About />
+          <Achievements />
           <Skills />
           <Projects />
           <Business onOpen={setLightbox} />

@@ -370,6 +370,35 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
       background: var(--yellow); transform-origin: left;
       animation: scroll-progress linear both; animation-timeline: scroll(root);
     }
-    @keyframes scroll-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+}
+
+/* Project section buttons */
+.project-btn {
+  background-color: #0a7a8c;
+  color: #fff;
+  border-color: #0a7a8c;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.project-btn:hover, .project-btn:focus-visible {
+  background-color: #0d96ab;
+  border-color: #0d96ab;
+  color: #fff;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(10, 122, 140, 0.4);
+}
+
+.project-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(10, 122, 140, 0.4);
+}
+
+/* Alternating layout for Ventures on desktop */
+@media (min-width: 900px) {
+  .venture-card-reverse .venture-screen {
+    order: 2;
+  }
+  .venture-card-reverse .venture-body {
+    order: 1;
   }
 }
