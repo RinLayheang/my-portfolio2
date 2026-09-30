@@ -70,7 +70,7 @@ const projects = [
     desc: "A fully 3D reimagining of the classic endless runner game. Jump, duck, and dodge obstacles as you speed through the desert.",
     type: "Three.js", year: "2026", kind: "build",
     path: "/project/dino_run_3d",
-    img: img("dino3d", [640, 1200]), imgAlt: "Dino Run 3D game interface",
+    img: { src: "/img/dino3d-cover.jpeg" }, imgAlt: "Dino Run 3D game interface",
     url: "https://dino3d.rinlayheang.me/",
   },
   {
@@ -358,8 +358,8 @@ const sparkline = [26.6, 27.8, 29.2, 30.1, 29.9, 29.0, 28.5, 28.4, 28.1, 27.7, 2
 
 // Both portrait layers share one crop, so they line up pixel for pixel
 const heroSrc = (name) => ({
-  src: `/img/${name}-933.webp`,
-  srcSet: `/img/${name}-600.webp 600w, /img/${name}-933.webp 933w`,
+  src: `/img/${name}-933.webp?v=2`,
+  srcSet: `/img/${name}-600.webp?v=2 600w, /img/${name}-933.webp?v=2 933w`,
 });
 const HERO_SIZES = "(max-width: 1024px) 100vw, 90vh";
 
