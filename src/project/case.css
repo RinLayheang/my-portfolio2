@@ -1,0 +1,165 @@
+/* ── Case-study pages (PassKru, NGEP, FindMoy) ──
+   Same language as the home page: paper, ink, bracket panels, condensed display type.
+   Each page sets --accent on .case and everything below follows it. */
+.case { --accent: var(--teal); position: relative; isolation: isolate; min-height: 100svh; overflow-x: clip; }
+.case .contours { position: fixed; }
+.case-wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+
+/* top bar */
+.case-bar {
+  position: sticky; top: 0; z-index: 50;
+  background: color-mix(in srgb, var(--paper) 82%, transparent);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--rule);
+}
+.case-bar .case-wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; }
+.case-back { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-soft); transition: color 0.2s; }
+.case-back .icon { width: 16px; height: 16px; transition: translate 0.3s var(--ease); }
+.case-back:hover { color: var(--ink); }
+.case-back:hover .icon { translate: -3px 0; }
+.case-brand { font-size: 20px; text-decoration: none; }
+.case-crumb { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); }
+
+/* hero */
+.case-hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: clamp(32px, 5vw, 80px); align-items: center; padding: clamp(48px, 7vw, 96px) 0 clamp(40px, 5vw, 64px); }
+.case-eyebrow { display: inline-flex; align-items: center; gap: 10px; color: var(--accent); }
+.case-eyebrow::before { content: ""; width: 28px; height: 1px; background: currentColor; }
+.case-title { font-size: clamp(64px, 9.5vw, 136px); margin: 18px 0 20px; }
+.case-title em { font-style: normal; color: var(--accent); }
+.case-lede { font-size: clamp(18px, 1.6vw, 21px); line-height: 1.55; max-width: 32em; }
+.case-hero .tags { margin-top: 22px; }
+.case-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+.case .cut-btn { --t: var(--accent); border-color: var(--t); color: var(--t); }
+.case .cut-btn:hover { background: var(--t); color: var(--paper); }
+.case .cut-btn.is-solid { background: var(--t); color: #fff; }
+.case .cut-btn.is-solid:hover { background: transparent; color: var(--t); }
+
+/* hero media: framed image, zooms slightly on hover */
+.case-media { position: relative; }
+.case-frame {
+  overflow: hidden; background: #fff;
+  clip-path: polygon(18px 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%, 0 18px);
+  box-shadow: 0 30px 60px -30px rgba(11, 16, 38, 0.45);
+}
+.case-frame img { width: 100%; transition: scale 0.8s var(--ease); }
+.case-media:hover .case-frame img { scale: 1.03; }
+.case-media figcaption { margin-top: 12px; font-size: 13px; color: var(--ink-soft); }
+.case-media-poster { max-width: 440px; justify-self: center; width: 100%; }
+
+/* an embedded game or prototype */
+.case-embed { background: #0b1026; }
+.case-embed iframe { display: block; width: 100%; height: 100%; border: 0; }
+
+/* stat strip */
+.case-stats { display: grid; grid-template-columns: repeat(var(--n, 4), 1fr); gap: 14px; }
+.case-stat { padding: 22px 22px 20px; }
+.case-stat b { display: block; font-size: clamp(44px, 5vw, 64px); color: var(--accent); }
+.case-stat span { display: block; margin-top: 10px; font-size: 14px; color: var(--ink-soft); line-height: 1.45; }
+.case-note { margin-top: 12px; font-size: 13px; color: var(--ink-soft); }
+
+/* sections */
+.case-sec { padding-top: clamp(64px, 8vw, 112px); }
+.case-sec-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 24px 48px; align-items: end; margin-bottom: clamp(28px, 3.5vw, 44px); padding-bottom: 18px; border-bottom: 1px solid var(--rule); }
+.case-sec-head h2 { font-size: clamp(44px, 6vw, 84px); margin-top: 10px; }
+.case-sec-head p:last-child { color: var(--ink-soft); max-width: 34em; }
+.case-prose { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 24px 48px; }
+.case-prose p { font-size: 18px; line-height: 1.65; }
+.case-prose p + p { margin-top: 14px; color: var(--ink-soft); }
+
+/* card grid */
+.case-grid { display: grid; grid-template-columns: repeat(var(--cols, 3), 1fr); gap: 14px; }
+.case-card { padding: 24px 24px 26px; }
+.case-card-icon { display: grid; place-items: center; width: 42px; height: 42px; margin-bottom: 18px; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); clip-path: var(--cut); }
+.case-card-icon .icon { width: 20px; height: 20px; }
+.case-card h3 { font-size: 26px; }
+.case-card p { margin-top: 8px; font-size: 15px; color: var(--ink-soft); line-height: 1.55; }
+
+/* numbered steps with a status pill */
+.case-steps { counter-reset: step; display: grid; }
+.case-step { display: grid; grid-template-columns: 88px minmax(0, 1fr) auto; gap: 20px; align-items: start; padding: 26px 0; border-bottom: 1px solid var(--rule); transition: background-color 0.3s; }
+.case-step-num { font-size: 56px; color: color-mix(in srgb, var(--ink) 18%, transparent); transition: color 0.3s; }
+.case-step:hover .case-step-num { color: var(--accent); }
+.case-step h3 { font-size: 30px; }
+.case-step p { margin-top: 6px; color: var(--ink-soft); max-width: 40em; }
+.case-pill { padding: 5px 12px; border-radius: 999px; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; border: 1px solid var(--rule); color: var(--ink-soft); }
+.case-pill.is-live { border-color: transparent; background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); }
+.case-pill.is-live::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 7px; border-radius: 50%; background: currentColor; vertical-align: 1px; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+
+/* channel list */
+.case-channels { display: flex; flex-wrap: wrap; gap: 10px; }
+.case-channels li { display: flex; align-items: center; gap: 12px; padding: 10px 12px 10px 16px; border: 1px solid var(--rule); background: color-mix(in srgb, var(--paper) 80%, transparent); font-weight: 500; }
+
+/* photo gallery: tall shot on the left, two stacked on the right */
+.case-gallery { display: grid; grid-template-columns: 3fr 4fr; grid-template-rows: 1fr 1fr; gap: 14px; }
+.case-gallery figure { position: relative; overflow: hidden; clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px); background: rgba(11, 16, 38, 0.06); }
+.case-gallery figure:first-child { grid-row: span 2; }
+.case-gallery img { width: 100%; height: 100%; object-fit: cover; transition: scale 0.8s var(--ease); }
+.case-gallery figure:hover img { scale: 1.04; }
+.case-gallery figcaption {
+  position: absolute; left: 0; right: 0; bottom: 0; padding: 36px 18px 14px;
+  background: linear-gradient(transparent, rgba(11, 16, 38, 0.75));
+  color: #fff; font-size: 13px; letter-spacing: 0.02em;
+}
+
+/* team */
+.case-team { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.case-member { display: flex; align-items: center; gap: 14px; padding: 16px 18px; }
+.case-avatar {
+  display: grid; place-items: center; flex-shrink: 0; width: 48px; height: 48px; border-radius: 50%;
+  font: 800 18px/1 var(--display); font-variation-settings: "wdth" 75; color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.case-member.is-me .case-avatar { background: var(--accent); color: #fff; }
+.case-member strong { display: block; font-weight: 500; }
+.case-member div span { display: block; font-size: 13px; color: var(--ink-soft); line-height: 1.35; margin-top: 2px; }
+
+/* tech row */
+.case-stack { display: flex; flex-wrap: wrap; gap: 8px; }
+.case-stack li { padding: 8px 14px; border: 1px solid var(--rule); font-size: 14px; font-weight: 500; background: color-mix(in srgb, var(--paper) 80%, transparent); }
+
+/* FAQ */
+.case-faq { display: grid; }
+.case-faq details { border-bottom: 1px solid var(--rule); }
+.case-faq summary { display: flex; align-items: center; gap: 18px; padding: 22px 0; cursor: pointer; list-style: none; font-size: 19px; font-weight: 500; }
+.case-faq summary::-webkit-details-marker { display: none; }
+.case-faq summary b { font-size: 13px; font-weight: 500; color: var(--accent); letter-spacing: 0.06em; }
+.case-faq summary::after { content: "+"; margin-left: auto; font-size: 26px; font-weight: 400; line-height: 1; color: var(--ink-soft); transition: rotate 0.3s var(--ease); }
+.case-faq details[open] summary::after { rotate: 45deg; color: var(--accent); }
+.case-faq details p { padding: 0 0 24px 42px; max-width: 46em; color: var(--ink-soft); }
+
+/* poster beside prose */
+.case-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 72px); align-items: start; }
+.case-split .case-media-poster { position: sticky; top: 96px; }
+
+/* closing band, dark like Contact on the home page */
+.case-end { margin-top: clamp(72px, 9vw, 128px); }
+.case-end .case-wrap { display: flex; justify-content: space-between; align-items: end; gap: 32px; flex-wrap: wrap; padding-top: clamp(56px, 7vw, 96px); padding-bottom: clamp(56px, 7vw, 96px); }
+.case-end h2 { font-size: clamp(56px, 8vw, 112px); }
+.case-end p { margin-top: 14px; color: var(--ink-soft); max-width: 30em; }
+.case-end .cut-btn { --t: var(--accent); }
+.case-end .cut-btn.is-solid { color: #0b1026; }
+.case-end .cut-btn.is-solid:hover { color: var(--t); }
+
+/* entrance: content settles in on load (the global reduced-motion rule flattens this) */
+.case-in > * { animation: case-in 0.9s var(--ease) both; animation-delay: calc(var(--i, 0) * 80ms); }
+@keyframes case-in { from { opacity: 0; translate: 0 24px; } }
+
+@media (max-width: 960px) {
+  .case-hero, .case-split, .case-prose, .case-sec-head { grid-template-columns: 1fr; }
+  .case-split .case-media-poster { position: static; }
+  .case-stats { grid-template-columns: repeat(2, 1fr); }
+  .case-grid, .case-team { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .case-crumb { display: none; }
+  .case-grid, .case-stats, .case-team { grid-template-columns: 1fr; }
+  .case-step { grid-template-columns: 52px minmax(0, 1fr); gap: 4px 14px; }
+  .case-step-num { font-size: 40px; }
+  .case-step .case-pill { grid-column: 2; justify-self: start; margin-top: 10px; }
+  .case-step h3 { font-size: 26px; }
+  .case-gallery { grid-template-columns: 1fr; grid-template-rows: none; }
+  .case-gallery figure:first-child { grid-row: auto; aspect-ratio: 3 / 4; }
+  .case-gallery figure { aspect-ratio: 4 / 3; }
+  .case-faq details p { padding-left: 0; }
+}

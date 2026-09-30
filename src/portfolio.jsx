@@ -1,28 +1,61 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "./portfolio.css";
 import "./hero.css";
+// technology logos: Devicon where it has one, hand-drawn in assets/logos otherwise
+import pythonLogo from "devicon/icons/python/python-original.svg";
+import pandasLogo from "devicon/icons/pandas/pandas-original.svg";
+import matplotlibLogo from "devicon/icons/matplotlib/matplotlib-original.svg";
+import jupyterLogo from "devicon/icons/jupyter/jupyter-original.svg";
+import reactLogo from "devicon/icons/react/react-original.svg";
+import jsLogo from "devicon/icons/javascript/javascript-original.svg";
+import tsLogo from "devicon/icons/typescript/typescript-original.svg";
+import nextLogo from "devicon/icons/nextjs/nextjs-original.svg";
+import nodeLogo from "devicon/icons/nodejs/nodejs-original.svg";
+import expressLogo from "devicon/icons/express/express-original.svg";
+import tailwindLogo from "devicon/icons/tailwindcss/tailwindcss-original.svg";
+import threeLogo from "devicon/icons/threejs/threejs-original.svg";
+import htmlLogo from "devicon/icons/html5/html5-original.svg";
+import cssLogo from "devicon/icons/css3/css3-original.svg";
+import cLogo from "devicon/icons/c/c-original.svg";
+import cppLogo from "devicon/icons/cplusplus/cplusplus-original.svg";
+import postgresLogo from "devicon/icons/postgresql/postgresql-original.svg";
+import supabaseLogo from "devicon/icons/supabase/supabase-original.svg";
+import firebaseLogo from "devicon/icons/firebase/firebase-original.svg";
+import dockerLogo from "devicon/icons/docker/docker-original.svg";
+import vercelLogo from "devicon/icons/vercel/vercel-original.svg";
+import gitLogo from "devicon/icons/git/git-original.svg";
+import githubLogo from "devicon/icons/github/github-original.svg";
+import postmanLogo from "devicon/icons/postman/postman-original.svg";
+import viteLogo from "devicon/icons/vitejs/vitejs-original.svg";
+import arduinoLogo from "devicon/icons/arduino/arduino-original.svg";
+import powerbiLogo from "./assets/logos/powerbi.svg";
+import tableauLogo from "./assets/logos/tableau.svg";
+import sqlLogo from "./assets/logos/sql.svg";
+import seabornLogo from "./assets/logos/seaborn.svg";
+import aiLogo from "./assets/logos/ai.svg";
+import railwayLogo from "./assets/logos/railway.svg"; // Devicon's is white-on-transparent
 
 /* ── Content ── */
-// The three disciplines colour-code skills and projects across the page.
+// The skill areas, each with the tools used in it.
 const disciplines = [
   {
     key: "data",
     title: "Data analysis",
     desc: "Turning messy datasets into clear narratives: dashboards, statistical analysis and visualisations that support real decisions.",
-    tags: ["Python", "Pandas", "SQL", "Matplotlib", "Statistics", "Power BI", "Tableau", "Automation"],
+    tools: [["Python", pythonLogo], ["Pandas", pandasLogo], ["SQL", sqlLogo], ["Matplotlib", matplotlibLogo], ["Seaborn", seabornLogo], ["Jupyter", jupyterLogo], ["Power BI", powerbiLogo], ["Tableau", tableauLogo]],
   },
   {
     key: "build",
     title: "Full-stack development",
     desc: "Building web apps end to end, from the interface people click on to the server and database behind it.",
-    tags: ["React", "JavaScript", "Node.js", "SQL", "Tailwind", "HTML/CSS", "C", "C++", "Python"],
+    tools: [["TypeScript", tsLogo], ["JavaScript", jsLogo], ["React", reactLogo], ["Next.js", nextLogo], ["Node.js", nodeLogo], ["Express", expressLogo], ["Tailwind", tailwindLogo], ["Three.js", threeLogo], ["HTML", htmlLogo], ["CSS", cssLogo], ["C", cLogo], ["C++", cppLogo]],
   },
   {
-    key: "design",
-    title: "UI/UX design",
-    desc: "Designing interfaces people enjoy using, from wireframes to high-fidelity prototypes with a clear visual hierarchy.",
-    tags: ["Figma", "Prototyping", "User research", "Design systems", "UML"],
+    key: "tools",
+    title: "AI, cloud & tools",
+    desc: "The services and tooling behind shipped products: AI models, databases, hosting, containers and version control.",
+    tools: [["LLM APIs", aiLogo], ["PostgreSQL", postgresLogo], ["Supabase", supabaseLogo], ["Firebase", firebaseLogo], ["Docker", dockerLogo], ["Vercel", vercelLogo], ["Railway", railwayLogo], ["Git", gitLogo], ["GitHub", githubLogo], ["Postman", postmanLogo], ["Vite", viteLogo], ["Arduino", arduinoLogo]],
   },
 ];
 
@@ -36,6 +69,7 @@ const projects = [
     name: "Dino Run 3D",
     desc: "A fully 3D reimagining of the classic endless runner game. Jump, duck, and dodge obstacles as you speed through the desert.",
     type: "Three.js", year: "2026", kind: "build",
+    path: "/project/dino_run_3d",
     img: img("dino3d", [640, 1200]), imgAlt: "Dino Run 3D game interface",
     url: "https://dino3d.rinlayheang.me/",
   },
@@ -43,6 +77,7 @@ const projects = [
     name: "KonMus",
     desc: "A modern Data Science & AI Academy platform featuring lessons, code, models, and interactive quizzes in Khmer and English.",
     type: "Web App", year: "2026", kind: "build",
+    path: "/project/konmus",
     img: img("konmus", [640, 1200]), imgAlt: "KonMus Data Science & AI Academy interface",
     url: "https://kon-mus.vercel.app/",
   },
@@ -50,6 +85,7 @@ const projects = [
     name: "PassKru Arcade",
     desc: "A gamified educational platform to play games, answer questions, and win prizes while learning.",
     type: "Web App", year: "2026", kind: "build",
+    path: "/project/passkru_arcade",
     img: img("passkru_arcade", [640, 1200]), imgAlt: "PassKru Arcade game interface",
     url: "https://passkru.game.rinlayheang.me/",
   },
@@ -64,6 +100,7 @@ const projects = [
     name: "Be Badminton website",
     desc: "A React shop for badminton gear with a persistent cart and a custom admin dashboard.",
     type: "React", year: "2026", kind: "build",
+    path: "/project/be_badminton",
     img: img("be_badminton", [640, 1200]), imgAlt: "Be Badminton website on a laptop",
   },
   {
@@ -77,6 +114,7 @@ const projects = [
     name: "4WD robot car",
     desc: "An Arduino UNO robot with line following, obstacle detection and Bluetooth or joystick control, programmed in C++.",
     type: "Arduino", year: "2026", kind: "build",
+    path: "/project/robot_car",
     img: img("robot", [640, 1200]), imgAlt: "4WD robot car",
   },
   {
@@ -90,6 +128,7 @@ const projects = [
     name: "Gas Management System",
     desc: "A terminal-based admin tool written in C for a first-year project, with role-based menus for running a gas station.",
     type: "C", year: "2025", kind: "build",
+    path: "/project/gas_management",
     img: img("gas", [640, 1200]), imgAlt: "Gas Management System terminal interface",
   },
 ];
@@ -130,8 +169,8 @@ const ventures = [
     stack: ["Facebook Pages", "AI moderation", "Dashboard"],
     accent: "#0a7a8c",
     url: "https://findmoy.app",
-    detail: { label: "How it works", url: "https://findmoy.app/#how" },
-    img: { src: "/img/findmoy-live.png", srcSet: "/img/findmoy-live.png" },
+    detail: { label: "How it works", url: "/project/findmoy" },
+    poster: { ...img("findmoy-poster", [640, 1080]), w: 1080, h: 1350 },
   },
   {
     key: "passkru",
@@ -143,10 +182,10 @@ const ventures = [
     desc: "A learning platform designed to help teacher-exam candidates prepare effectively with personalized study plans based on each learner's needs.",
     features: ["Practice questions & quizzes", "Flashcards & mock exams", "Personalized study plans"],
     stack: ["React", "Node.js", "PostgreSQL"],
-    accent: "#8a5cf6",
+    accent: "#2f5bea",
     url: "https://pass-kru67.vercel.app/",
-    detail: { label: "Startup Details", url: "/project/passkru_startup" },
-    img: { src: "/img/passkru-live.png", srcSet: "/img/passkru-live.png" }
+    detail: { label: "Startup details", url: "/project/passkru_startup" },
+    poster: { ...img("passkru-poster", [640, 1080]), w: 1080, h: 1528 },
   },
 ];
 
@@ -180,6 +219,17 @@ function useScrollReveal() {
       root.classList.remove("reveal-ready");
     };
   }, []);
+}
+
+// Arriving at /#section from another page: the browser tries to jump before React has rendered
+// the section, so jump once it exists.
+function useHashScroll() {
+  const { hash } = useLocation();
+  useEffect(() => {
+    if (!hash) return;
+    const el = document.getElementById(decodeURIComponent(hash.slice(1)));
+    el?.scrollIntoView({ behavior: "instant", block: "start" });
+  }, [hash]);
 }
 
 const stagger = (i) => ({ "--i": i });
@@ -309,7 +359,7 @@ const sparkline = [26.6, 27.8, 29.2, 30.1, 29.9, 29.0, 28.5, 28.4, 28.1, 27.7, 2
 // Both portrait layers share one crop, so they line up pixel for pixel
 const heroSrc = (name) => ({
   src: `/img/${name}-933.webp`,
-  srcSet: `/img/${name}-600.webp 600w, /img/${name}-933.webp 933w, /img/${name}-1866.webp 1866w`,
+  srcSet: `/img/${name}-600.webp 600w, /img/${name}-933.webp 933w`,
 });
 const HERO_SIZES = "(max-width: 1024px) 100vw, 90vh";
 
@@ -458,7 +508,7 @@ function Hero() {
 }
 
 /* ── Shared section pieces (same language as the hero) ── */
-function Contours() {
+export function Contours() {
   return (
     <svg className="contours" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       {contourPaths.map((d, i) => <path key={i} d={d} />)}
@@ -505,98 +555,123 @@ function About() {
 }
 
 /* ── Achievements ── */
-export const ACHIEVEMENTS = [
+const ACHIEVEMENTS = [
   {
     key: "passkru",
-    title: "1st Place - NGEP",
-    desc: "Our team PassKru won 1st Place in the Next-Gen Engagement Program (NGEP) Batch 3! We competed against talented teams, pitching our MVP and business plan. This achievement validates our mission to revolutionize exam preparation through personalized study plans and interactive learning tools.",
+    kicker: "Competition winner",
+    place: "1st place",
+    badge: "Champion",
+    event: "NGEP Batch 3",
+    desc: "Our team PassKru won the Next-Gen Engagement Program (NGEP) Batch 3, pitching our MVP and business plan against teams from three departments. The prototype became PassKru, a teacher-exam prep platform with personalized study plans.",
+    facts: [
+      { label: "Event", value: "Next-Gen's Day, CADT" },
+      { label: "Date", value: "25 Sep 2026" },
+      { label: "Role", value: "Co-founder" },
+    ],
+    tags: ["Ed-tech", "SaaS", "Pitch"],
     link: "/project/passkru_ngep",
+    related: { label: "The startup", url: "/project/passkru_startup" },
     images: [
-      "/img/passkru-ngep-1-1080.webp",
-      "/img/passkru-ngep-2-1080.webp",
-      "/img/passkru-ngep-3-1080.webp"
-    ]
-  }
+      { name: "passkru-ngep-2", alt: "Team PassKru with their medals and the 1st Place Award" },
+      { name: "passkru-ngep-1", alt: "Holding the champion trophy and the award board", pos: "50% 30%" },
+      { name: "passkru-ngep-3", alt: "PassKru at the NGEP award ceremony" },
+    ],
+  },
 ];
 
-function ImageCarousel({ images, altText }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+// Crossfading slides with dots. Auto-advances unless motion is reduced, and pauses on hover or focus.
+function ImageCarousel({ images }) {
+  const [current, setCurrent] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const count = images.length;
 
   useEffect(() => {
-    if (!images || images.length <= 1) return;
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [images]);
+    if (count <= 1 || paused || prefersReducedMotion()) return;
+    const t = setTimeout(() => setCurrent((i) => (i + 1) % count), 4500);
+    return () => clearTimeout(t);
+  }, [current, paused, count]);
 
-  if (!images || images.length === 0) return null;
+  const go = (d) => setCurrent((i) => (i + d + count) % count);
 
   return (
-    <div style={{ position: 'relative', width: '100%', aspectRatio: '4/3', overflow: 'hidden', borderRadius: '8px' }}>
-      {images.map((src, index) => (
+    <div
+      className="carousel"
+      onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}
+    >
+      {images.map((im, i) => (
         <img
-          key={src}
-          src={src}
-          alt={`${altText} ${index + 1}`}
-          loading="lazy"
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            opacity: index === currentIndex ? 1 : 0,
-            transform: index === currentIndex ? 'scale(1.05)' : 'scale(1)',
-            transition: index === currentIndex 
-              ? 'opacity 1s ease-in-out, transform 4s ease-out' 
-              : 'opacity 1s ease-in-out, transform 0s',
-            borderRadius: '8px'
-          }}
+          key={im.name}
+          src={`/img/${im.name}-1080.webp`}
+          srcSet={`/img/${im.name}-480.webp 480w, /img/${im.name}-1080.webp 1080w`}
+          sizes="(max-width: 900px) 92vw, 46vw"
+          alt={im.alt}
+          aria-hidden={i !== current}
+          className={i === current ? "is-current" : undefined}
+          style={im.pos ? { objectPosition: im.pos } : undefined}
+          loading={i === 0 ? undefined : "lazy"}
+          decoding="async"
         />
       ))}
+      {count > 1 && (
+        <div className="carousel-ui">
+          <button type="button" className="carousel-btn" onClick={() => go(-1)} aria-label="Previous photo"><Chevron dir="left" /></button>
+          <div className="carousel-dots">
+            {images.map((im, i) => (
+              <button
+                key={im.name} type="button" onClick={() => setCurrent(i)}
+                aria-label={`Photo ${i + 1} of ${count}`} aria-current={i === current}
+                className={i === current ? "is-current" : undefined}
+              />
+            ))}
+          </div>
+          <button type="button" className="carousel-btn" onClick={() => go(1)} aria-label="Next photo"><Chevron dir="right" /></button>
+        </div>
+      )}
     </div>
   );
 }
+
+const Medal = () => (
+  <svg className="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h8l-2 6h-4L8 3Zm4 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z" /></svg>
+);
 
 function Achievements() {
   return (
     <section id="achievements" className="section">
       <Contours />
-      <SectionHead title="Achievements" label="Competitions" sub="Hackathons & Awards" />
-      <div className="about" style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-        {ACHIEVEMENTS.map((ach) => (
-          <div key={ach.key} className="hud" style={{ padding: '32px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px', alignItems: 'center' }} data-reveal>
-            <div className="achievement-image">
-              <ImageCarousel images={ach.images} altText={ach.title} />
+      <SectionHead title="Achievements" label="Competitions" sub="Hackathons & awards" />
+      <ul className="achievements">
+        {ACHIEVEMENTS.map((a) => (
+          <li key={a.key} className="hud achievement" data-reveal>
+            <div className="achievement-media">
+              <ImageCarousel images={a.images} />
+              <span className="achievement-badge"><Medal />{a.badge}</span>
             </div>
-            <div className="achievement-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-              <p className="hud-label" style={{ color: 'var(--teal)', marginBottom: '12px' }}>Competition Winner</p>
-              <h3 className="cond" style={{ fontSize: '2.5rem', marginBottom: '16px' }}>🏆 {ach.title}</h3>
-              <p style={{ marginBottom: '24px', opacity: 0.8, lineHeight: 1.6, fontSize: '1.1rem' }}>{ach.desc}</p>
-              
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '32px' }}>
-                <span style={{ fontSize: '11px', padding: '6px 12px', border: '1px solid var(--ink)', opacity: 0.7, borderRadius: '100px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Ed-Tech</span>
-                <span style={{ fontSize: '11px', padding: '6px 12px', border: '1px solid var(--ink)', opacity: 0.7, borderRadius: '100px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>SaaS</span>
-                <span style={{ fontSize: '11px', padding: '6px 12px', border: '1px solid var(--ink)', opacity: 0.7, borderRadius: '100px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>2026</span>
+            <div className="achievement-body">
+              <p className="hud-label">{a.kicker}</p>
+              <h3 className="cond">{a.place}<span>{a.event}</span></h3>
+              <p className="achievement-desc">{a.desc}</p>
+              <dl className="achievement-facts">
+                {a.facts.map((f) => (
+                  <div key={f.label}><dt>{f.label}</dt><dd>{f.value}</dd></div>
+                ))}
+              </dl>
+              <ul className="tags">{a.tags.map((t) => <li key={t}>{t}</li>)}</ul>
+              <div className="achievement-actions">
+                <Link to={a.link} className="cut-btn is-solid">Read the story <ArrowUpRight /></Link>
+                {a.related && <Link to={a.related.url} className="venture-detail">{a.related.label}</Link>}
               </div>
-
-              <Link to={ach.link} className="cut-btn" style={{ display: 'inline-flex' }}>
-                View project details <ArrowUpRight />
-              </Link>
             </div>
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
     </section>
   );
 }
 
 /* ── Skills ── */
-// decorative bar shapes for each skill panel
-const skillBars = { data: [40, 65, 50, 85, 70, 95], build: [55, 45, 80, 60, 90, 75], design: [70, 50, 60, 40, 80, 65] };
-const skillShort = { data: "Data", build: "Build", design: "Design" };
+const skillShort = { data: "Data", build: "Build", tools: "Tools" };
 
 function Skills() {
   return (
@@ -609,12 +684,14 @@ function Skills() {
             <p className="hud-label">{skillShort[d.key]}</p>
             <h3 className="cond">{d.title}</h3>
             <p className="skill-desc">{d.desc}</p>
-            <ul className="tags">
-              {d.tags.map((t) => <li key={t}>{t}</li>)}
+            <ul className="logos">
+              {d.tools.map(([name, logo]) => (
+                <li key={name}>
+                  <img src={logo} alt="" width="20" height="20" loading="lazy" decoding="async" />
+                  <span>{name}</span>
+                </li>
+              ))}
             </ul>
-            <div className="bars" aria-hidden="true">
-              {skillBars[d.key].map((h, i) => <i key={i} style={{ height: `${h}%`, animationDelay: `${i * 0.05}s` }} />)}
-            </div>
           </article>
         ))}
       </div>
@@ -638,14 +715,16 @@ function ProjectCard({ p, i }) {
         />
       </div>
       <div className="project-row">
-        <div>
-          <p className="hud-label">{p.type} · {p.year}</p>
-          <h3 className="cond">{p.name}</h3>
-        </div>
-        {p.path && <Link to={p.path} className="cut-btn project-btn">View <ArrowUpRight /></Link>}
-        {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer" className="cut-btn project-btn">Visit <ArrowUpRight /></a>}
+        <p className="hud-label">{p.type} · {p.year}</p>
+        <h3 className="cond">{p.name}</h3>
       </div>
       <p className="project-desc">{p.desc}</p>
+      {(p.path || p.url) && (
+        <div className="project-actions">
+          {p.path && <Link to={p.path} className="cut-btn project-btn">Details <ArrowUpRight /></Link>}
+          {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer" className="cut-btn">Live site <ArrowUpRight /></a>}
+        </div>
+      )}
     </li>
   );
 }
@@ -703,12 +782,14 @@ function SubHead({ label, title, sub }) {
 function VentureCard({ v, i }) {
   return (
     <li className="venture" data-reveal style={{ ...stagger(i), "--accent": v.accent }}>
-      <article className={`hud venture-card ${i % 2 !== 0 ? 'venture-card-reverse' : ''}`} style={{ padding: 0, overflow: 'hidden', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', alignItems: 'stretch' }}>
-        <div className="venture-screen" style={v.img ? { padding: 0, backgroundColor: 'transparent', display: 'flex', position: 'relative' } : { display: 'flex', position: 'relative' }}>
-          {v.img ? (
-            <img src={v.img.src} srcSet={v.img.srcSet} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} alt={`${v.name} interface`} loading="lazy" decoding="async" />
+      <article className={`hud venture-card${i % 2 ? " is-reverse" : ""}`}>
+        <div className="venture-screen">
+          {v.poster ? (
+            <div className="venture-poster">
+              <img src={v.poster.src} srcSet={v.poster.srcSet} sizes="(max-width: 900px) 70vw, 340px" width={v.poster.w} height={v.poster.h} alt={`${v.name} poster`} loading="lazy" decoding="async" />
+            </div>
           ) : (
-            <div className="browser" style={{ margin: 'auto' }}>
+            <div className="browser">
               <div className="browser-bar" aria-hidden="true">
                 <span className="dot" /><span className="dot" /><span className="dot" />
                 <span className="browser-url">{v.domain}</span>
@@ -716,10 +797,11 @@ function VentureCard({ v, i }) {
               <AppMock name={v.name} />
             </div>
           )}
-          <span className="venture-status" style={{ position: 'absolute', top: '16px', left: '16px', right: 'auto' }}>{v.status}</span>
+          <span className="venture-status">{v.status}</span>
+          <span className="venture-domain">{v.domain}</span>
         </div>
 
-        <div className="venture-body" style={{ padding: '40px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <div className="venture-body">
           <p className="hud-label">Founder · SaaS{v.product && ` · ${v.product}`}</p>
           <h3 className="cond">{v.name}</h3>
           <p className="venture-tagline">{v.tagline}</p>
@@ -755,7 +837,7 @@ function VentureCard({ v, i }) {
 }
 
 const Ventures = () => (
-  <ul className="ventures" style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+  <ul className="ventures">
     {ventures.map((v, i) => <VentureCard key={v.key} v={v} i={i} />)}
   </ul>
 );
@@ -874,9 +956,9 @@ function Contact() {
 export default function Portfolio() {
   const [lightbox, setLightbox] = useState(null);
   useScrollReveal();
+  useHashScroll();
   return (
     <div className="portfolio">
-      <div className="scroll-progress" aria-hidden="true" />
       <a href="#about" className="skip-link">Skip to content</a>
       <Nav />
       <main>

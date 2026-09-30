@@ -5,11 +5,10 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Portfolio from './portfolio.jsx'
 
 // Project pages are split into their own chunks so the home page doesn't download them
-const DinoGame = lazy(() => import('./project/dinogame.jsx'))
-const WeatherAnalyzer = lazy(() => import('./project/weather_analyzer.jsx'))
-const BeBadmintonUI = lazy(() => import('./project/be_ui.jsx'))
 const PassKruNgep = lazy(() => import('./project/passkru_ngep.jsx'))
 const PassKruStartup = lazy(() => import('./project/passkru_startup.jsx'))
+const FindMoy = lazy(() => import('./project/findmoy.jsx'))
+const ProjectDetail = lazy(() => import('./project/project_detail.jsx'))
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -17,11 +16,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Suspense fallback={null}>
         <Routes>
           <Route path="/" element={<Portfolio />} />
-          <Route path="/project/dinogame" element={<DinoGame />} />
-          <Route path="/project/weather_analyzer" element={<WeatherAnalyzer />} />
-          <Route path="/project/be_badminton_ui" element={<BeBadmintonUI />} />
           <Route path="/project/passkru_ngep" element={<PassKruNgep />} />
           <Route path="/project/passkru_startup" element={<PassKruStartup />} />
+          <Route path="/project/findmoy" element={<FindMoy />} />
+          {/* every other project; named routes above win over this one */}
+          <Route path="/project/:slug" element={<ProjectDetail />} />
         </Routes>
       </Suspense>
     </BrowserRouter>
